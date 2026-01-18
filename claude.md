@@ -1,0 +1,82 @@
+# Speecha Mobile
+
+Speech improvement app that helps users reduce filler words through practice and AI-powered feedback. Users record and audio speaking and then get analysis of detected filler words in their speech
+
+## Stack
+
+- Expo + React Native + TypeScript
+- Expo Router (file-based navigation)
+- NativeWind (Tailwind for RN)
+- React Query (data fetching)
+- Supabase (auth, database, edge functions)
+- Deepgram (transcription)
+- OpenAI GPT-5.1 (filler detection)
+- expo-av (audio recording)
+
+## Architecture
+
+- Local-first for anonymous users (AsyncStorage)
+- Cloud sync for signed-in users (Supabase)
+- Audio stored locally only, never uploaded
+- Edge Functions for Deepgram/OpenAI calls
+
+## Auth
+
+- Apple and Google sign-in only
+- Anonymous usage allowed with limits
+
+## User Tiers
+
+- Anonymous: 3 recordings/day, 1 min max, no friends, local only
+- Free (signed in): 3 recordings/day, 1 min max, limited friends, cloud sync
+- Pro: Unlimited recordings, 5 min max, unlimited friends, cloud sync
+
+## Database Tables
+
+- users: profile, streak, push token, pricing plan
+- sessions: transcript_data jsonb, clarity_score, filler_count, duration
+- friendships: sender_id, receiver_id, status
+
+## Screens
+
+4 tabs: Home, History, Friends, Profile.
+Plus: Recording, Results, Auth
+
+## Commands
+
+- `npx expo start` - Start dev server
+- `npx expo run:ios` - Run on iOS simulator
+- `npx eas build` - Build for production
+
+## Environment
+
+Required in `.env`:
+
+- EXPO_PUBLIC_SUPABASE_URL
+- EXPO_PUBLIC_SUPABASE_ANON_KEY
+
+## Conventions
+
+- File naming: camelCase for hooks (`useAuth.tsx`), PascalCase for components (`Button.tsx`), lowercase for screens (`profile.tsx`)
+- Exports: Named exports with arrow functions (`export const Button = () => {}`)
+- Props: Sort alphabetically
+- Styling: NativeWind only, no StyleSheet.create()
+- Functions: Arrow functions in .tsx files
+
+## Folder Structure
+
+- `/app` - Screens and routes (Expo Router). Orchestrate components and hooks, no heavy logic.
+- `/components/ui` - Generic components (Button, Card, Input)
+- `/components/recording` - Recording-specific components
+- `/components/results` - Results-specific components
+- `/hooks` - Custom hooks with Supabase queries, use React Query
+- `/lib` - Supabase client, utils
+- `/constants` - Static values (colors, prompts, config)
+- `/types` - Shared TypeScript interfaces
+- `/assets` - Images, fonts
+
+## Do / Don't
+
+DO: Use TypeScript, React Query for data fetching, NativeWind for styling, arrow functions, sort props alphabetically
+
+DON'T: Use StyleSheet.create(), fetch data inside components, store sensitive keys in code
