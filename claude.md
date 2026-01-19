@@ -27,14 +27,14 @@ Speech improvement app that helps users reduce filler words through practice and
 
 ## User Tiers
 
-- Anonymous: 3 recordings/day, 1 min max, no friends, local only
-- Free (signed in): 3 recordings/day, 1 min max, limited friends, cloud sync
-- Pro: Unlimited recordings, 5 min max, unlimited friends, cloud sync
+- Anonymous: 3 recordings/day, 2 min max, no friends, local only
+- Free (signed in): 3 recordings/day, 2 min max, 3 friends max, cloud sync
+- Pro: Unlimited recordings, 2 min max, unlimited friends, cloud sync
 
 ## Database Tables
 
-- users: profile, streak, push token, pricing plan
-- sessions: transcript_data jsonb, clarity_score, filler_count, duration
+- profiles: username, email, streak, push token, pricing plan
+- speech_analyses: transcript_data jsonb, clarity_score, filler_count, duration
 - friendships: sender_id, receiver_id, status
 
 ## Screens
@@ -71,7 +71,7 @@ Required in `.env`:
 - `/components/results` - Results-specific components
 - `/hooks` - Custom hooks with Supabase queries, use React Query
 - `/lib` - Supabase client, utils
-- `/constants` - Static values (colors, prompts, config)
+- `/constants` - Static values (colors, prompts, limits)
 - `/types` - Shared TypeScript interfaces
 - `/assets` - Images, fonts
 
