@@ -2,7 +2,7 @@
 -- TABLES
 -- ============================================
 
-CREATE TABLE users (
+CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   username TEXT UNIQUE NOT NULL,
   email TEXT NOT NULL,
@@ -16,12 +16,12 @@ CREATE TABLE users (
   pricing_plan TEXT DEFAULT 'free' NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  CONSTRAINT users_valid_pricing_plan CHECK (pricing_plan IN ('free', 'pro'))
+  CONSTRAINT profiles_valid_pricing_plan CHECK (pricing_plan IN ('free', 'pro'))
 );
 
-CREATE TABLE sessions (
+CREATE TABLE speech_analyses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  profile_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   prompt_id TEXT,
   transcript_data JSONB,
   clarity_score INT NOT NULL,
@@ -29,16 +29,16 @@ CREATE TABLE sessions (
   fillers_per_minute FLOAT NOT NULL,
   duration_seconds INT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  CONSTRAINT sessions_clarity_score_range CHECK (clarity_score BETWEEN 0 AND 100),
-  CONSTRAINT sessions_filler_count_nonneg CHECK (filler_count >= 0),
-  CONSTRAINT sessions_fpm_nonneg CHECK (fillers_per_minute >= 0),
-  CONSTRAINT sessions_duration_reasonable CHECK (duration_seconds BETWEEN 1 AND 300)
+  CONSTRAINT speech_analyses_clarity_score_range CHECK (clarity_score BETWEEN 0 AND 100),
+  CONSTRAINT speech_analyses_filler_count_nonneg CHECK (filler_count >= 0),
+  CONSTRAINT speech_analyses_fpm_nonneg CHECK (fillers_per_minute >= 0),
+  CONSTRAINT speech_analyses_duration_reasonable CHECK (duration_seconds BETWEEN 1 AND 300)
 );
 
 CREATE TABLE friendships (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  sender_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  receiver_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  sender_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  receiver_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   status TEXT DEFAULT 'pending' NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   CONSTRAINT friendships_no_self_friend CHECK (sender_id != receiver_id),
@@ -52,7 +52,7 @@ ON friendships (LEAST(sender_id, receiver_id), GREATEST(sender_id, receiver_id))
 -- INDEXES
 -- ============================================
 
-CREATE INDEX idx_sessions_user_created ON sessions(user_id, created_at DESC);
+CREATE INDEX idx_speech_analyses_profile_created ON speech_analyses(profile_id, created_at DESC);
 CREATE INDEX idx_friendships_sender_accepted ON friendships(sender_id) WHERE status = 'accepted';
 CREATE INDEX idx_friendships_receiver_accepted ON friendships(receiver_id) WHERE status = 'accepted';
 
@@ -60,11 +60,11 @@ CREATE INDEX idx_friendships_receiver_accepted ON friendships(receiver_id) WHERE
 -- FUNCTIONS
 -- ============================================
 
--- Auto-create user on signup
+-- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, username, full_name, avatar_url)
+  INSERT INTO public.profiles (id, email, username, full_name, avatar_url)
   VALUES (
     NEW.id,
     NEW.email,
@@ -93,8 +93,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SET search_path = public;
 
-CREATE TRIGGER users_updated_at
-  BEFORE UPDATE ON users
+CREATE TRIGGER profiles_updated_at
+  BEFORE UPDATE ON profiles
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at();
 
@@ -114,23 +114,23 @@ SET search_path = public
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT u.id, u.username, u.full_name, u.avatar_url, u.current_streak, u.longest_streak
-  FROM users u
+  SELECT p.id, p.username, p.full_name, p.avatar_url, p.current_streak, p.longest_streak
+  FROM profiles p
   WHERE EXISTS (
     SELECT 1 FROM friendships f
     WHERE f.status = 'accepted'
       AND (
-        (f.sender_id = auth.uid() AND f.receiver_id = u.id)
-        OR (f.receiver_id = auth.uid() AND f.sender_id = u.id)
+        (f.sender_id = auth.uid() AND f.receiver_id = p.id)
+        OR (f.receiver_id = auth.uid() AND f.sender_id = p.id)
       )
   );
 END;
 $$;
 
 -- Get friend stats (no transcript exposure)
-CREATE OR REPLACE FUNCTION get_friend_stats(target_user_id UUID)
+CREATE OR REPLACE FUNCTION get_friend_stats(target_profile_id UUID)
 RETURNS TABLE (
-  total_sessions INT,
+  total_analyses INT,
   avg_clarity INT,
   avg_fillers_per_minute FLOAT,
   current_streak INT,
@@ -145,8 +145,8 @@ BEGIN
     SELECT 1 FROM friendships f
     WHERE f.status = 'accepted'
       AND (
-        (f.sender_id = auth.uid() AND f.receiver_id = target_user_id)
-        OR (f.receiver_id = auth.uid() AND f.sender_id = target_user_id)
+        (f.sender_id = auth.uid() AND f.receiver_id = target_profile_id)
+        OR (f.receiver_id = auth.uid() AND f.sender_id = target_profile_id)
       )
   ) THEN
     RETURN;
@@ -155,17 +155,17 @@ BEGIN
   RETURN QUERY
   SELECT 
     COUNT(*)::INT,
-    ROUND(AVG(s.clarity_score))::INT,
-    ROUND(AVG(s.fillers_per_minute)::numeric, 2)::FLOAT,
-    (SELECT u.current_streak FROM users u WHERE u.id = target_user_id),
-    MAX(s.created_at)
-  FROM sessions s
-  WHERE s.user_id = target_user_id;
+    ROUND(AVG(sa.clarity_score))::INT,
+    ROUND(AVG(sa.fillers_per_minute)::numeric, 2)::FLOAT,
+    (SELECT p.current_streak FROM profiles p WHERE p.id = target_profile_id),
+    MAX(sa.created_at)
+  FROM speech_analyses sa
+  WHERE sa.profile_id = target_profile_id;
 END;
 $$;
 
--- Search user by email (exact match only)
-CREATE OR REPLACE FUNCTION search_user_by_email(search_email TEXT)
+-- Search profile by email (exact match only)
+CREATE OR REPLACE FUNCTION search_profile_by_email(search_email TEXT)
 RETURNS TABLE (
   id UUID,
   username TEXT,
@@ -178,15 +178,15 @@ SET search_path = public
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT u.id, u.username, u.full_name, u.avatar_url
-  FROM users u
-  WHERE u.email = search_email
+  SELECT p.id, p.username, p.full_name, p.avatar_url
+  FROM profiles p
+  WHERE p.email = search_email
   LIMIT 1;
 END;
 $$;
 
--- Search user by username (partial match)
-CREATE OR REPLACE FUNCTION search_user_by_username(search_username TEXT)
+-- Search profile by username (partial match)
+CREATE OR REPLACE FUNCTION search_profile_by_username(search_username TEXT)
 RETURNS TABLE (
   id UUID,
   username TEXT,
@@ -199,9 +199,9 @@ SET search_path = public
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT u.id, u.username, u.full_name, u.avatar_url
-  FROM users u
-  WHERE u.username ILIKE '%' || search_username || '%'
+  SELECT p.id, p.username, p.full_name, p.avatar_url
+  FROM profiles p
+  WHERE p.username ILIKE '%' || search_username || '%'
   LIMIT 20;
 END;
 $$;
@@ -210,42 +210,42 @@ $$;
 -- ENABLE RLS
 -- ============================================
 
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE speech_analyses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE friendships ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE users FORCE ROW LEVEL SECURITY;
-ALTER TABLE sessions FORCE ROW LEVEL SECURITY;
+ALTER TABLE profiles FORCE ROW LEVEL SECURITY;
+ALTER TABLE speech_analyses FORCE ROW LEVEL SECURITY;
 ALTER TABLE friendships FORCE ROW LEVEL SECURITY;
 
 -- ============================================
--- USERS POLICIES
+-- PROFILES POLICIES
 -- ============================================
 
 CREATE POLICY "Users can view their own profile"
-ON users FOR SELECT
+ON profiles FOR SELECT
 USING (auth.uid() = id);
 
 CREATE POLICY "Users can update their own profile"
-ON users FOR UPDATE
+ON profiles FOR UPDATE
 USING (auth.uid() = id)
 WITH CHECK (auth.uid() = id);
 
 -- ============================================
--- SESSIONS POLICIES
+-- SPEECH_ANALYSES POLICIES
 -- ============================================
 
-CREATE POLICY "Users can view their own sessions"
-ON sessions FOR SELECT
-USING (auth.uid() = user_id);
+CREATE POLICY "Users can view their own speech analyses"
+ON speech_analyses FOR SELECT
+USING (auth.uid() = profile_id);
 
-CREATE POLICY "Users can insert their own sessions"
-ON sessions FOR INSERT
-WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can insert their own speech analyses"
+ON speech_analyses FOR INSERT
+WITH CHECK (auth.uid() = profile_id);
 
-CREATE POLICY "Users can delete their own sessions"
-ON sessions FOR DELETE
-USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete their own speech analyses"
+ON speech_analyses FOR DELETE
+USING (auth.uid() = profile_id);
 
 -- ============================================
 -- FRIENDSHIPS POLICIES
@@ -272,12 +272,12 @@ USING (auth.uid() = sender_id OR auth.uid() = receiver_id);
 -- COLUMN-LEVEL GRANTS
 -- ============================================
 
-REVOKE ALL ON users FROM authenticated;
-GRANT SELECT ON users TO authenticated;
-GRANT UPDATE (username, full_name, avatar_url, notifications_enabled, push_token) ON users TO authenticated;
+REVOKE ALL ON profiles FROM authenticated;
+GRANT SELECT ON profiles TO authenticated;
+GRANT UPDATE (username, full_name, avatar_url, notifications_enabled, push_token) ON profiles TO authenticated;
 
-REVOKE ALL ON sessions FROM authenticated;
-GRANT SELECT, INSERT, DELETE ON sessions TO authenticated;
+REVOKE ALL ON speech_analyses FROM authenticated;
+GRANT SELECT, INSERT, DELETE ON speech_analyses TO authenticated;
 
 REVOKE ALL ON friendships FROM authenticated;
 GRANT SELECT, INSERT, DELETE ON friendships TO authenticated;
@@ -289,5 +289,5 @@ GRANT UPDATE (status) ON friendships TO authenticated;
 
 GRANT EXECUTE ON FUNCTION get_friend_profiles() TO authenticated;
 GRANT EXECUTE ON FUNCTION get_friend_stats(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION search_user_by_email(TEXT) TO authenticated;
-GRANT EXECUTE ON FUNCTION search_user_by_username(TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION search_profile_by_email(TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION search_profile_by_username(TEXT) TO authenticated;
