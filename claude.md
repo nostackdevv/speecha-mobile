@@ -77,6 +77,6 @@ Required in `.env`:
 
 ## Do / Don't
 
-DO: Use TypeScript, React Query for data fetching, NativeWind for styling, arrow functions, sort props alphabetically
+DO: Use TypeScript, React Query for data fetching, NativeWind for styling, arrow functions, sort props alphabetically, keep comments as minimal as possible only when necessary
 
 DON'T: Use StyleSheet.create(), fetch data inside components, store sensitive keys in code
