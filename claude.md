@@ -8,7 +8,7 @@ Speech improvement app that helps users reduce filler words through practice and
 - Expo Router (file-based navigation)
 - NativeWind (Tailwind for RN)
 - React Query (data fetching)
-- Supabase (auth, database, edge functions)
+- Supabase (auth, database)
 - Deepgram (transcription)
 - OpenAI GPT-5.1 (filler detection)
 - expo-audio (audio recording)
@@ -18,7 +18,7 @@ Speech improvement app that helps users reduce filler words through practice and
 - Local-first for anonymous users (AsyncStorage)
 - Cloud sync for signed-in users (Supabase)
 - Audio stored locally only, never uploaded
-- Edge Functions for Deepgram/OpenAI calls
+- Vercel API routes for Deepgram/OpenAI calls (existing Next.js app)
 
 ## Auth
 
