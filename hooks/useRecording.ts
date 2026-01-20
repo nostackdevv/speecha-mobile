@@ -31,7 +31,9 @@ export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) =>
   const checkPermission = useCallback(async () => {
     try {
       const result = await AudioModule.getRecordingPermissionsAsync();
-      setPermissionStatus(result.granted ? "granted" : "undetermined");
+      setPermissionStatus(
+        result.granted ? "granted" : result.canAskAgain ? "undetermined" : "denied"
+      );
       return result.granted;
     } catch {
       setError("Failed to check microphone permission");
@@ -53,6 +55,8 @@ export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) =>
   }, []);
 
   const start = useCallback(async () => {
+    if (status === "recording" || status === "paused") return false;
+
     setError(null);
     autoStopTriggeredRef.current = false;
 
@@ -77,7 +81,7 @@ export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) =>
       setError("Failed to start recording");
       return false;
     }
-  }, [audioRecorder, permissionStatus, requestPermission]);
+  }, [audioRecorder, permissionStatus, requestPermission, status]);
 
   const pause = useCallback(() => {
     if (status !== "recording") return;
@@ -131,11 +135,9 @@ export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) =>
     }
   }, [durationSeconds, status, stop, tier]);
 
-  // Check permission on mount
+  // Check permission on mount (queueMicrotask defers setState to avoid cascading renders)
   useEffect(() => {
-    queueMicrotask(() => {
-      checkPermission();
-    });
+    queueMicrotask(checkPermission);
   }, [checkPermission]);
 
   // Cleanup on unmount

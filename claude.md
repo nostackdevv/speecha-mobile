@@ -1,6 +1,6 @@
 # Speecha Mobile
 
-Speech improvement app that helps users reduce filler words through practice and AI-powered feedback. Users record and audio speaking and then get analysis of detected filler words in their speech
+Speech improvement app that helps users reduce filler words through practice and AI-powered feedback. Users record and audio speaking and then get analysis of detected filler words in their speech. I already have a web app that was built in nextjs and the api routes was also hosted on vercel which had the deepgram and openai.
 
 ## Stack
 
@@ -11,7 +11,7 @@ Speech improvement app that helps users reduce filler words through practice and
 - Supabase (auth, database, edge functions)
 - Deepgram (transcription)
 - OpenAI GPT-5.1 (filler detection)
-- expo-av (audio recording)
+- expo-audio (audio recording)
 
 ## Architecture
 
@@ -57,7 +57,7 @@ Required in `.env`:
 
 ## Conventions
 
-- File naming: camelCase for hooks (`useAuth.tsx`), PascalCase for components (`Button.tsx`), lowercase for screens (`profile.tsx`)
+- File naming: camelCase for hooks (`useAuth.ts`), PascalCase for components (`Button.tsx`), lowercase for screens (`profile.tsx`). Use `.tsx` only when file contains JSX, otherwise `.ts`
 - Exports: Named exports with arrow functions (`export const Button = () => {}`)
 - Props: Sort alphabetically
 - Styling: NativeWind only, no StyleSheet.create()
