@@ -48,12 +48,17 @@ export const useCreateSpeechAnalysis = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: Omit<SpeechAnalysisInsert, "profile_id">) => {
+    mutationFn: async (
+      input: Omit<SpeechAnalysisInsert, "profile_id" | "timezone">
+    ) => {
       if (!user?.id) throw new Error("Not authenticated");
+
+      const timezone =
+        Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
 
       const { data, error } = await supabase
         .from("speech_analyses")
-        .insert({ ...input, profile_id: user.id })
+        .insert({ ...input, profile_id: user.id, timezone })
         .select()
         .single();
 
@@ -63,6 +68,9 @@ export const useCreateSpeechAnalysis = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["speech-analysis-list", user?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["profile", user?.id],
       });
     },
   });

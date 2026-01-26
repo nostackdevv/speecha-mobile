@@ -28,6 +28,7 @@ CREATE TABLE speech_analyses (
   filler_count INT NOT NULL,
   fillers_per_minute FLOAT NOT NULL,
   duration_seconds INT NOT NULL,
+  timezone TEXT NOT NULL DEFAULT 'UTC',
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   CONSTRAINT speech_analyses_clarity_score_range CHECK (clarity_score BETWEEN 0 AND 100),
   CONSTRAINT speech_analyses_filler_count_nonneg CHECK (filler_count >= 0),
@@ -163,6 +164,47 @@ BEGIN
   WHERE sa.profile_id = target_profile_id;
 END;
 $$;
+
+-- Update streak on new speech analysis
+CREATE OR REPLACE FUNCTION update_streak_on_analysis()
+RETURNS TRIGGER AS $$
+DECLARE
+  user_today DATE;
+  user_last_date DATE;
+BEGIN
+  user_today := (NOW() AT TIME ZONE NEW.timezone)::DATE;
+
+  SELECT last_session_date INTO user_last_date
+  FROM profiles
+  WHERE id = NEW.profile_id;
+
+  IF user_last_date IS NULL OR user_last_date < user_today - 1 THEN
+    UPDATE profiles
+    SET
+      current_streak = 1,
+      last_session_date = user_today,
+      longest_streak = GREATEST(longest_streak, 1)
+    WHERE id = NEW.profile_id;
+
+  ELSIF user_last_date = user_today - 1 THEN
+    UPDATE profiles
+    SET
+      current_streak = current_streak + 1,
+      last_session_date = user_today,
+      longest_streak = GREATEST(longest_streak, current_streak + 1)
+    WHERE id = NEW.profile_id;
+
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+DROP TRIGGER IF EXISTS on_speech_analysis_created ON speech_analyses;
+CREATE TRIGGER on_speech_analysis_created
+  AFTER INSERT ON speech_analyses
+  FOR EACH ROW
+  EXECUTE FUNCTION update_streak_on_analysis();
 
 -- Search profile by email (exact match only)
 CREATE OR REPLACE FUNCTION search_profile_by_email(search_email TEXT)

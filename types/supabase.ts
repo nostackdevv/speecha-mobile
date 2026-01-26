@@ -118,6 +118,7 @@ export type Database = {
           id: string
           profile_id: string
           prompt_id: string | null
+          timezone: string
           transcript_data: Json | null
         }
         Insert: {
@@ -129,6 +130,7 @@ export type Database = {
           id?: string
           profile_id: string
           prompt_id?: string | null
+          timezone: string
           transcript_data?: Json | null
         }
         Update: {
@@ -140,6 +142,7 @@ export type Database = {
           id?: string
           profile_id?: string
           prompt_id?: string | null
+          timezone?: string
           transcript_data?: Json | null
         }
         Relationships: [
