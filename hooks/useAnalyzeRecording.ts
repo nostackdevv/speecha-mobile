@@ -1,10 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
-import { analyzeTranscript, transcribeAudio } from "@/lib/api";
+import {
+  analyzeTranscript,
+  toTranscriptWords,
+  transcribeAudio,
+} from "@/lib/api";
 import type { RecordingAnalysis } from "@/types/api";
 
-export type AnalysisStatus = "idle" | "transcribing" | "analyzing";
+import { useAuth } from "./useAuth";
+import { useCreateSpeechAnalysis } from "./useSpeechAnalyses";
+
+export type AnalysisStatus = "idle" | "transcribing" | "analyzing" | "saving";
 
 const EMPTY_RESULT: RecordingAnalysis = {
   transcript: "",
@@ -22,6 +29,8 @@ const EMPTY_RESULT: RecordingAnalysis = {
 };
 
 export const useAnalyzeRecording = () => {
+  const { user } = useAuth();
+  const createAnalysis = useCreateSpeechAnalysis();
   const [status, setStatus] = useState<AnalysisStatus>("idle");
 
   const mutation = useMutation({
@@ -36,14 +45,11 @@ export const useAnalyzeRecording = () => {
       setStatus("analyzing");
       const analysis = await analyzeTranscript({
         transcript: transcription.transcript,
-        words: transcription.words.map(({ displayText, index }) => ({
-          index,
-          text: displayText,
-        })),
+        words: toTranscriptWords(transcription.words),
         duration: transcription.duration,
       });
 
-      return {
+      const result: RecordingAnalysis = {
         transcript: transcription.transcript,
         words: transcription.words,
         duration: transcription.duration,
@@ -51,6 +57,22 @@ export const useAnalyzeRecording = () => {
         fillerStats: analysis.fillerStats,
         clarityScore: analysis.clarityScore,
       };
+
+      if (user?.id) {
+        setStatus("saving");
+        await createAnalysis.mutateAsync({
+          clarity_score: result.clarityScore?.score ?? 0,
+          duration_seconds: result.duration,
+          filler_count: result.fillerStats.totalFillers,
+          fillers_per_minute: result.fillerStats.fillersPerMinute,
+          transcript_data: {
+            fillers: result.fillers,
+            words: toTranscriptWords(result.words),
+          },
+        });
+      }
+
+      return result;
     },
     onSettled: () => {
       setStatus("idle");

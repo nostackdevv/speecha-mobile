@@ -2,8 +2,10 @@ import type {
   AnalysisResult,
   AnalyzeRequest,
   ApiError,
+  NormalizedWord,
   TranscriptionResult,
 } from "@/types/api";
+import type { TranscriptWord } from "@/types/database";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -64,3 +66,7 @@ export const analyzeTranscript = async (
 
   return handleResponse<AnalysisResult>(response);
 };
+
+export const toTranscriptWords = (
+  words: NormalizedWord[],
+): TranscriptWord[] => words.map(({ displayText, index }) => ({ index, text: displayText }));
