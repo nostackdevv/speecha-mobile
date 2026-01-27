@@ -57,7 +57,7 @@ Required in `.env`:
 
 ## Conventions
 
-- File naming: camelCase for hooks (`useAuth.ts`), PascalCase for components (`Button.tsx`), lowercase for screens (`profile.tsx`). Use `.tsx` only when file contains JSX, otherwise `.ts`
+- File naming: camelCase for hooks (`useAuth.ts`), PascalCase for components and contexts (`Button.tsx`, `AuthContext.tsx`), lowercase for screens (`profile.tsx`). Use `.tsx` only when file contains JSX, otherwise `.ts`
 - Exports: Named exports with arrow functions (`export const Button = () => {}`)
 - Props: Sort alphabetically
 - Styling: NativeWind only, no StyleSheet.create()
@@ -69,6 +69,7 @@ Required in `.env`:
 - `/components/ui` - Generic components (Button, Card, Input)
 - `/components/recording` - Recording-specific components
 - `/components/results` - Results-specific components
+- `/contexts` - React Context providers (auth, theme, feature flags). Singleton app state, not server state.
 - `/hooks` - Custom hooks with Supabase queries, use React Query
 - `/lib` - Supabase client, utils
 - `/constants` - Static values (colors, prompts, limits)
