@@ -1,13 +1,25 @@
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Session, User } from "@supabase/supabase-js";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { supabase } from "@/lib/supabase";
+
+GoogleSignin.configure({
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+});
 
 type AuthContextValue = {
   isAuthenticated: boolean;
   isLoading: boolean;
   session: Session | null;
-  signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   user: User | null;
 };
@@ -37,15 +49,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+  const signInWithGoogle = async () => {
+    const result = await GoogleSignin.signIn();
+    const idToken = result.data?.idToken;
+
+    if (!idToken) {
+      throw new Error("Failed to get Google ID token");
+    }
+
+    const { error } = await supabase.auth.signInWithIdToken({
+      provider: "google",
+      token: idToken,
     });
     if (error) throw error;
   };
 
   const signOut = async () => {
+    // try {
+    //   await GoogleSignin.signOut();
+    // } catch (_err) {
+    //   // User might not have signed in with Google, that's fine
+    // }
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
@@ -56,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated: !!session,
         isLoading,
         session,
-        signIn,
+        signInWithGoogle,
         signOut,
         user,
       }}
