@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { useState } from "react";
+import { Text, View } from "react-native";
 
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from "@/hooks/useAuth";
+import { TestScreen } from "../test";
 
 export const HomeScreen = () => {
-  const { isAuthenticated, isLoading, signInWithGoogle, signOut, user } = useAuth();
+  const { isAuthenticated, isLoading, signInWithGoogle, signOut, user } =
+    useAuth();
   const [error, setError] = useState<string | null>(null);
 
   const handleGoogleSignIn = async () => {
@@ -35,7 +37,7 @@ export const HomeScreen = () => {
 
   return (
     <View className="flex-1 items-center justify-center gap-4 bg-white px-6 dark:bg-black">
-      {isAuthenticated ? (
+      {/* {isAuthenticated ? (
         <>
           <Text className="text-lg font-bold text-black dark:text-white">
             Signed in as
@@ -57,11 +59,9 @@ export const HomeScreen = () => {
         >
           <Text className="font-semibold text-white">Sign in with Google</Text>
         </Pressable>
-      )}
-
-      {error && (
-        <Text className="mt-2 text-center text-red-500">{error}</Text>
-      )}
+      )} */}
+      <TestScreen />
+      {error && <Text className="mt-2 text-center text-red-500">{error}</Text>}
     </View>
   );
 };
