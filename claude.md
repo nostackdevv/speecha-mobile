@@ -22,14 +22,14 @@ Speech improvement app that helps users reduce filler words through practice and
 
 ## Auth
 
-- Apple and Google sign-in only
+- Google sign-in (Apple sign-in planned)
 - Anonymous usage allowed with limits
 
 ## User Tiers
 
-- Anonymous: 3 recordings/day, 2 min max, no friends, local only
-- Free (signed in): 3 recordings/day, 2 min max, 3 friends max, cloud sync
-- Pro: Unlimited recordings, 2 min max, unlimited friends, cloud sync
+- Anonymous: 3 recordings/day, 60s max, no friends, local only
+- Free (signed in): 3 recordings/day, 60s max, 3 friends max, cloud sync
+- Pro: Unlimited recordings, 120s max, unlimited friends, cloud sync
 
 ## Database Tables
 
@@ -39,8 +39,8 @@ Speech improvement app that helps users reduce filler words through practice and
 
 ## Screens
 
-4 tabs: Home, History, Friends, Profile.
-Plus: Recording, Results, Auth
+3 tabs: Home, Progress, Friends. Profile accessed from Home header.
+Plus: Recording, Results, Auth, Onboarding, Goals, Prompt Selection, Settings, Badges, Paywall, Friend Detail, Add Friend
 
 ## Commands
 
@@ -69,9 +69,15 @@ Required in `.env`:
 ## Folder Structure
 
 - `/app` - Screens and routes (Expo Router). Orchestrate components and hooks, no heavy logic.
-- `/components/ui` - Generic components (Button, Card, Input)
+- `/components/ui` - Generic components (Button, Card, Avatar, StatCard, etc.)
+- `/components/home` - Home screen components
 - `/components/recording` - Recording-specific components
 - `/components/results` - Results-specific components
+- `/components/progress` - Progress tab components
+- `/components/friends` - Friends tab components
+- `/components/profile` - Profile screen components
+- `/components/paywall` - Paywall screen components
+- `/components/prompts` - Prompt selection components
 - `/contexts` - React Context providers (auth, theme, feature flags). Singleton app state, not server state.
 - `/hooks` - Custom hooks with Supabase queries, use React Query
 - `/lib` - Supabase client, utils
