@@ -1,0 +1,88 @@
+import { Badge } from "@/types/badges";
+
+export const BADGES: Badge[] = [
+  {
+    description: "Complete your first recording session",
+    icon: "mic",
+    id: "first-session",
+    name: "First Steps",
+    unlockCriteria: { threshold: 1, type: "sessions" },
+  },
+  {
+    description: "Maintain a 3-day recording streak",
+    icon: "fire",
+    id: "3-day-streak",
+    name: "On Fire",
+    unlockCriteria: { threshold: 3, type: "streak" },
+  },
+  {
+    description: "Maintain a 7-day recording streak",
+    icon: "fire",
+    id: "7-day-streak",
+    name: "7-Day Streak",
+    unlockCriteria: { threshold: 7, type: "streak" },
+  },
+  {
+    description: "Maintain a 30-day recording streak",
+    icon: "fire",
+    id: "30-day-streak",
+    name: "Unstoppable",
+    unlockCriteria: { threshold: 30, type: "streak" },
+  },
+  {
+    description: "Complete a session with zero filler words",
+    icon: "star",
+    id: "filler-free",
+    name: "Filler Free",
+    unlockCriteria: { threshold: 1, type: "filler_free" },
+  },
+  {
+    description: "Achieve a clarity score of 90% or higher",
+    icon: "trophy",
+    id: "clarity-90",
+    name: "Crystal Clear",
+    unlockCriteria: { threshold: 90, type: "clarity" },
+  },
+  {
+    description: "Complete 10 recording sessions",
+    icon: "repeat",
+    id: "10-sessions",
+    name: "Dedicated Speaker",
+    unlockCriteria: { threshold: 10, type: "sessions" },
+  },
+  {
+    description: "Complete 50 recording sessions",
+    icon: "award",
+    id: "50-sessions",
+    name: "Public Speaker",
+    unlockCriteria: { threshold: 50, type: "sessions" },
+  },
+  {
+    description: "Complete 100 recording sessions",
+    icon: "award",
+    id: "100-sessions",
+    name: "Master Orator",
+    unlockCriteria: { threshold: 100, type: "sessions" },
+  },
+  {
+    description: "Add your first friend",
+    icon: "users",
+    id: "first-friend",
+    name: "Social Starter",
+    unlockCriteria: { threshold: 1, type: "friends" },
+  },
+  {
+    description: "Add 5 friends",
+    icon: "users",
+    id: "5-friends",
+    name: "Speaking Circle",
+    unlockCriteria: { threshold: 5, type: "friends" },
+  },
+  {
+    description: "Achieve a clarity score of 95% or higher",
+    icon: "zap",
+    id: "clarity-95",
+    name: "Eloquent",
+    unlockCriteria: { threshold: 95, type: "clarity" },
+  },
+];
