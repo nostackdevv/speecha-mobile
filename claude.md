@@ -14,13 +14,6 @@ Speech improvement app that helps users eliminate filler words through daily rec
 - OpenAI GPT-5.1 (filler detection)
 - expo-audio (audio recording)
 
-## Architecture
-
-- Local-first for anonymous users (AsyncStorage)
-- Cloud sync for signed-in users (Supabase)
-- Audio stored locally only, never uploaded
-- Vercel API routes for Deepgram/OpenAI calls (existing Next.js app)
-
 ## Auth
 
 - Apple and Google sign-in only
@@ -102,6 +95,9 @@ Required in `.env`:
 - Husky + lint-staged: pre-commit hook auto-runs ESLint on staged `.ts`/`.tsx` files
 - API calls go to an external Next.js app on Vercel (`EXPO_PUBLIC_API_URL`), not local — Deepgram and OpenAI keys live there
 - Supabase client uses AsyncStorage for session persistence (`lib/supabase.ts`)
+- SF Pro Rounded uses iOS PostScript names (`.SFProRounded-Regular` etc.), no font bundling needed
+- Icons use `@expo/vector-icons/Ionicons`, not expo-symbols
+- `constants/colors.ts` exports `COLORS` const mirroring Tailwind tokens for programmatic use (icon tints, chart colors)
 
 ## Do / Don't
 
