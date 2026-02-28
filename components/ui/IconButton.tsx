@@ -4,6 +4,8 @@ import { Pressable } from 'react-native';
 import { COLORS } from '@/constants/colors';
 import { cn } from '@/lib/cn';
 
+import type { IconName } from '@/constants/icons';
+
 import { Icon } from './Icon';
 
 const VARIANT_CLASSES = {
@@ -24,7 +26,7 @@ interface IconButtonProps {
   className?: string;
   disabled?: boolean;
   haptic?: boolean;
-  icon: string;
+  icon: IconName;
   onPress?: () => void;
   size?: number;
   variant?: 'dark' | 'filled' | 'ghost';

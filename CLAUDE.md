@@ -87,7 +87,7 @@ Required in `.env`:
 - `/lib` - Supabase client, utils
 - `/constants` - Static values (colors, prompts, limits, badges, archetypes)
 - `/types` - Shared TypeScript interfaces
-- `/assets` - Images, fonts
+- `/assets` - Images, fonts, icons (SVG)
 
 ## Non-obvious Patterns
 
@@ -96,7 +96,8 @@ Required in `.env`:
 - API calls go to an external Next.js app on Vercel (`EXPO_PUBLIC_API_URL`), not local — Deepgram and OpenAI keys live there
 - Supabase client uses AsyncStorage for session persistence (`lib/supabase.ts`)
 - SF Pro Rounded uses iOS PostScript names (`.SFProRounded-Regular` etc.), no font bundling needed
-- Icons use `@expo/vector-icons/Ionicons`, not expo-symbols
+- Icons use SVGs from Iconify via react-native-svg. SVG files in `/assets/icons/`, registry in `constants/icons.ts`. Use `<Icon name="..." />` from `components/ui/Icon.tsx`
+- `constants/icons.ts` exports `ICONS` registry and `IconName` type — add new icons by downloading SVG from Iconify API, placing in `/assets/icons/`, and registering in the `ICONS` map
 - `constants/colors.ts` exports `COLORS` const mirroring Tailwind tokens for programmatic use (icon tints, chart colors)
 
 ## Do / Don't

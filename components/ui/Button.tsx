@@ -4,6 +4,8 @@ import { Pressable, Text, View } from 'react-native';
 import { COLORS } from '@/constants/colors';
 import { cn } from '@/lib/cn';
 
+import type { IconName } from '@/constants/icons';
+
 import { Icon } from './Icon';
 
 interface ButtonProps {
@@ -11,7 +13,7 @@ interface ButtonProps {
   disabled?: boolean;
   fullWidth?: boolean;
   haptic?: boolean;
-  icon?: string;
+  icon?: IconName;
   loading?: boolean;
   onPress: () => void;
   title: string;

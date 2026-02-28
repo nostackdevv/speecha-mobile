@@ -23,18 +23,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'app.speecha.mobile',
-  },
-  android: {
-    adaptiveIcon: {
-      foregroundImage: './assets/images/adaptive-icon.png',
-      backgroundColor: '#ffffff',
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
     },
-    package: 'app.speecha.mobile',
-    edgeToEdgeEnabled: true,
-    permissions: [
-      'android.permission.RECORD_AUDIO',
-      'android.permission.MODIFY_AUDIO_SETTINGS',
-    ],
   },
   web: {
     bundler: 'metro',
@@ -57,6 +48,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         ]
       : '@react-native-google-signin/google-signin',
   ],
+  extra: {
+    eas: {
+      projectId: '602e35eb-62db-4675-bd96-b329f247e94f',
+    },
+  },
   experiments: {
     typedRoutes: true,
   },

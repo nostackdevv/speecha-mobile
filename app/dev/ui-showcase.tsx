@@ -36,7 +36,7 @@ export default function UIShowcaseScreen() {
       <View className="gap-3">
         <Button onPress={() => {}} title="Start Recording" />
         <Button onPress={() => {}} title="Secondary" variant="secondary" />
-        <Button icon="mic.fill" onPress={() => {}} title="With Icon" />
+        <Button icon="mic" onPress={() => {}} title="With Icon" />
         <Button loading onPress={() => {}} title="Loading" />
         <Button fullWidth onPress={() => {}} title="Full Width" />
         <Button disabled onPress={() => {}} title="Disabled" />
@@ -45,11 +45,11 @@ export default function UIShowcaseScreen() {
       {/* IconButton */}
       <SectionTitle title="IconButton" />
       <View className="flex-row gap-3">
-        <IconButton icon="chevron.left" onPress={() => {}} />
-        <IconButton icon="xmark" onPress={() => {}} variant="ghost" />
-        <IconButton icon="arrow.left" onPress={() => {}} variant="dark" />
-        <IconButton icon="gearshape.fill" onPress={() => {}} />
-        <IconButton disabled icon="trash.fill" onPress={() => {}} />
+        <IconButton icon="chevron-left" onPress={() => {}} />
+        <IconButton icon="close" onPress={() => {}} variant="ghost" />
+        <IconButton icon="arrow-up" onPress={() => {}} variant="dark" />
+        <IconButton icon="settings" onPress={() => {}} />
+        <IconButton disabled icon="trash" onPress={() => {}} />
       </View>
 
       {/* Card */}

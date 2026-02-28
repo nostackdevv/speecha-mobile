@@ -1,50 +1,51 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 
-const TabBarIcon = (props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) => {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
-};
+import { Icon } from '@/components/ui/Icon';
+import { COLORS } from '@/constants/colors';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#2f95dc',
-        headerShown: true,
+        headerShown: false,
+        tabBarActiveTintColor: COLORS.clarityBlue.DEFAULT,
+        tabBarInactiveTintColor: COLORS.grey[400],
+        tabBarLabelStyle: {
+          fontFamily: '.SFProRounded-Medium',
+          fontSize: 10,
+        },
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+          borderTopColor: COLORS.grey[200],
+          borderTopWidth: 0.5,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name="home" />,
+          tabBarIcon: ({ color, size }) => (
+            <Icon color={color} name="home" size={size} />
+          ),
+          tabBarLabel: 'Home',
         }}
       />
       <Tabs.Screen
-        name="history"
+        name="progress"
         options={{
-          title: 'History',
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon color={color} name="history" />
+          tabBarIcon: ({ color, size }) => (
+            <Icon color={color} name="chart" size={size} />
           ),
+          tabBarLabel: 'Progress',
         }}
       />
       <Tabs.Screen
         name="friends"
         options={{
-          title: 'Friends',
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name="users" />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name="user" />,
+          tabBarIcon: ({ color, size }) => (
+            <Icon color={color} name="users" size={size} />
+          ),
+          tabBarLabel: 'Friends',
         }}
       />
     </Tabs>

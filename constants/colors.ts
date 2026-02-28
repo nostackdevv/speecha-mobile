@@ -77,6 +77,7 @@ export const COLORS = {
     800: '#05603a',
     900: '#054f31',
   },
+  tabBar: '#f0f0f0',
   bg: '#f5f6f8',
   black: '#0a0a0a',
   white: '#ffffff',
