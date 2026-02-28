@@ -67,7 +67,7 @@ Required in `.env`:
 - File naming: camelCase for hooks (`useAuth.ts`), PascalCase for components and contexts (`Button.tsx`, `AuthContext.tsx`), lowercase for screens (`profile.tsx`). Use `.tsx` only when file contains JSX, otherwise `.ts`
 - Exports: Named exports with arrow functions (`export const Button = () => {}`)
 - Props: Sort alphabetically
-- Styling: NativeWind only, no StyleSheet.create()
+- Styling: NativeWind only, no StyleSheet.create(). Use standard Tailwind classes that maps to the design (px-3, gap-2, h-14) — only use arbitrary values like px-[29px] when no standard utility exists.
 - Functions: Arrow functions in .tsx files
 
 ## Folder Structure
@@ -103,4 +103,4 @@ Required in `.env`:
 
 DO: Use TypeScript, React Query for data fetching, NativeWind for styling, arrow functions, sort props alphabetically, keep comments as minimal as possible only when necessary
 
-DON'T: Use StyleSheet.create(), fetch data inside components, store sensitive keys in code
+DON'T: Use StyleSheet.create(), fetch data inside components, store sensitive keys in code, use arbitrary Tailwind values (px-[12px], gap-[8px]) when standard classes exist (px-3, gap-2) — check the Tailwind spacing scale first, use falsy `&&` for conditional rendering (`{count && <View/>}` crashes when count is 0) — always use ternary (`count ? <View/> : null`) or boolean coercion (`{!!count && <View/>}`)
