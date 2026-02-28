@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import "../global.css";
 
-import { useColorScheme } from "@/components/useColorScheme";
+import { useColorScheme } from "react-native";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -21,11 +21,6 @@ export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary
 } from "expo-router";
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -64,7 +59,6 @@ function RootLayoutNav() {
         <AuthProvider>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
           </Stack>
         </AuthProvider>
       </ThemeProvider>
