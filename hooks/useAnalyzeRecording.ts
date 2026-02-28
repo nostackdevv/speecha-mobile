@@ -1,20 +1,20 @@
-import { useMutation } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useMutation } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
 
 import {
   analyzeTranscript,
   toTranscriptWords,
   transcribeAudio,
-} from "@/lib/api";
-import type { RecordingAnalysis } from "@/types/api";
+} from '@/lib/api';
+import type { RecordingAnalysis } from '@/types/api';
 
-import { useAuth } from "./useAuth";
-import { useCreateSpeechAnalysis } from "./useSpeechAnalyses";
+import { useAuth } from './useAuth';
+import { useCreateSpeechAnalysis } from './useSpeechAnalyses';
 
-export type AnalysisStatus = "idle" | "transcribing" | "analyzing" | "saving";
+export type AnalysisStatus = 'idle' | 'transcribing' | 'analyzing' | 'saving';
 
 const EMPTY_RESULT: RecordingAnalysis = {
-  transcript: "",
+  transcript: '',
   words: [],
   duration: 0,
   fillers: [],
@@ -31,18 +31,18 @@ const EMPTY_RESULT: RecordingAnalysis = {
 export const useAnalyzeRecording = () => {
   const { user } = useAuth();
   const createAnalysis = useCreateSpeechAnalysis();
-  const [status, setStatus] = useState<AnalysisStatus>("idle");
+  const [status, setStatus] = useState<AnalysisStatus>('idle');
 
   const mutation = useMutation({
     mutationFn: async (uri: string): Promise<RecordingAnalysis> => {
-      setStatus("transcribing");
+      setStatus('transcribing');
       const transcription = await transcribeAudio(uri);
 
       if (!transcription.transcript) {
         return { ...EMPTY_RESULT, duration: transcription.duration };
       }
 
-      setStatus("analyzing");
+      setStatus('analyzing');
       const analysis = await analyzeTranscript({
         transcript: transcription.transcript,
         words: toTranscriptWords(transcription.words),
@@ -59,7 +59,7 @@ export const useAnalyzeRecording = () => {
       };
 
       if (user?.id) {
-        setStatus("saving");
+        setStatus('saving');
         await createAnalysis.mutateAsync({
           clarity_score: result.clarityScore?.score ?? 0,
           duration_seconds: result.duration,
@@ -75,20 +75,20 @@ export const useAnalyzeRecording = () => {
       return result;
     },
     onSettled: () => {
-      setStatus("idle");
+      setStatus('idle');
     },
   });
 
   // Fire-and-forget: read results reactively via data/error/isPending
   const analyze = useCallback(
     (uri: string) => mutation.mutate(uri),
-    [mutation],
+    [mutation]
   );
 
   // Awaitable: use when you need the result before proceeding (e.g. navigating to results screen)
   const analyzeAsync = useCallback(
     (uri: string) => mutation.mutateAsync(uri),
-    [mutation],
+    [mutation]
   );
 
   return {

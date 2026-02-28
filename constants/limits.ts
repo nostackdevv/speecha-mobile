@@ -1,4 +1,4 @@
-export const TIERS = ["anonymous", "free", "pro"] as const;
+export const TIERS = ['anonymous', 'free', 'pro'] as const;
 
 export type Tier = (typeof TIERS)[number];
 

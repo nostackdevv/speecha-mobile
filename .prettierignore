@@ -4,3 +4,8 @@ build
 out
 pnpm-lock.yaml
 package-lock.json
+.expo
+dist
+ios
+android
+.claude

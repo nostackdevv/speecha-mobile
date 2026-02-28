@@ -1,23 +1,23 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { supabase } from "@/lib/supabase";
-import type { SpeechAnalysis, SpeechAnalysisInsert } from "@/types/database";
+import { supabase } from '@/lib/supabase';
+import type { SpeechAnalysis, SpeechAnalysisInsert } from '@/types/database';
 
-import { useAuth } from "./useAuth";
+import { useAuth } from './useAuth';
 
 export const useSpeechAnalysisList = () => {
   const { user } = useAuth();
 
   return useQuery<SpeechAnalysis[]>({
-    queryKey: ["speech-analysis-list", user?.id],
+    queryKey: ['speech-analysis-list', user?.id],
     queryFn: async () => {
-      if (!user?.id) throw new Error("User ID is required");
+      if (!user?.id) throw new Error('User ID is required');
 
       const { data, error } = await supabase
-        .from("speech_analyses")
-        .select("*")
-        .eq("profile_id", user.id)
-        .order("created_at", { ascending: false });
+        .from('speech_analyses')
+        .select('*')
+        .eq('profile_id', user.id)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
@@ -28,12 +28,12 @@ export const useSpeechAnalysisList = () => {
 
 export const useSpeechAnalysisDetail = (id: string | undefined) => {
   return useQuery<SpeechAnalysis>({
-    queryKey: ["speech-analysis-detail", id],
+    queryKey: ['speech-analysis-detail', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("speech_analyses")
-        .select("*")
-        .eq("id", id!)
+        .from('speech_analyses')
+        .select('*')
+        .eq('id', id!)
         .single();
 
       if (error) throw error;
@@ -49,15 +49,15 @@ export const useCreateSpeechAnalysis = () => {
 
   return useMutation({
     mutationFn: async (
-      input: Omit<SpeechAnalysisInsert, "profile_id" | "timezone">
+      input: Omit<SpeechAnalysisInsert, 'profile_id' | 'timezone'>
     ) => {
-      if (!user?.id) throw new Error("Not authenticated");
+      if (!user?.id) throw new Error('Not authenticated');
 
       const timezone =
-        Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
+        Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
 
       const { data, error } = await supabase
-        .from("speech_analyses")
+        .from('speech_analyses')
         .insert({ ...input, profile_id: user.id, timezone })
         .select()
         .single();
@@ -67,10 +67,10 @@ export const useCreateSpeechAnalysis = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["speech-analysis-list", user?.id],
+        queryKey: ['speech-analysis-list', user?.id],
       });
       queryClient.invalidateQueries({
-        queryKey: ["profile", user?.id],
+        queryKey: ['profile', user?.id],
       });
     },
   });
@@ -83,17 +83,19 @@ export const useDeleteSpeechAnalysis = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from("speech_analyses")
+        .from('speech_analyses')
         .delete()
-        .eq("id", id);
+        .eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: (_, deletedId) => {
       queryClient.invalidateQueries({
-        queryKey: ["speech-analysis-list", user?.id],
+        queryKey: ['speech-analysis-list', user?.id],
       });
-      queryClient.removeQueries({ queryKey: ["speech-analysis-detail", deletedId] });
+      queryClient.removeQueries({
+        queryKey: ['speech-analysis-detail', deletedId],
+      });
     },
   });
 };

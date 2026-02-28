@@ -1,14 +1,14 @@
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { Session, User } from "@supabase/supabase-js";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { Session, User } from '@supabase/supabase-js';
 import {
   createContext,
   ReactNode,
   useContext,
   useEffect,
   useState,
-} from "react";
+} from 'react';
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from '@/lib/supabase';
 
 GoogleSignin.configure({
   iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
@@ -54,11 +54,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const idToken = result.data?.idToken;
 
     if (!idToken) {
-      throw new Error("Failed to get Google ID token");
+      throw new Error('Failed to get Google ID token');
     }
 
     const { error } = await supabase.auth.signInWithIdToken({
-      provider: "google",
+      provider: 'google',
       token: idToken,
     });
     if (error) throw error;
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

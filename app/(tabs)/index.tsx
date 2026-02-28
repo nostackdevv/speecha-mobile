@@ -4,7 +4,8 @@ import { Pressable, Text, View } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 
 export const HomeScreen = () => {
-  const { isAuthenticated, isLoading, signInWithGoogle, signOut, user } = useAuth();
+  const { isAuthenticated, isLoading, signInWithGoogle, signOut, user } =
+    useAuth();
   const [error, setError] = useState<string | null>(null);
 
   const handleGoogleSignIn = async () => {
@@ -12,7 +13,7 @@ export const HomeScreen = () => {
       setError(null);
       await signInWithGoogle();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign in failed");
+      setError(e instanceof Error ? e.message : 'Sign in failed');
     }
   };
 
@@ -21,7 +22,7 @@ export const HomeScreen = () => {
       setError(null);
       await signOut();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign out failed");
+      setError(e instanceof Error ? e.message : 'Sign out failed');
     }
   };
 
@@ -59,9 +60,7 @@ export const HomeScreen = () => {
         </Pressable>
       )}
 
-      {error && (
-        <Text className="mt-2 text-center text-red-500">{error}</Text>
-      )}
+      {error && <Text className="mt-2 text-center text-red-500">{error}</Text>}
     </View>
   );
 };

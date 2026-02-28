@@ -19,7 +19,8 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: colorScheme === 'dark' ? '#fff' : '#2f95dc',
         headerShown: true,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -31,7 +32,9 @@ export default function TabLayout() {
         name="history"
         options={{
           title: 'History',
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name="history" />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon color={color} name="history" />
+          ),
         }}
       />
       <Tabs.Screen

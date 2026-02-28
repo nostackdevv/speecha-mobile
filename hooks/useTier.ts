@@ -1,15 +1,15 @@
-import { LIMITS, Tier } from "@/constants/limits";
+import { LIMITS, Tier } from '@/constants/limits';
 
-import { useAuth } from "./useAuth";
-import { useProfile } from "./useProfile";
+import { useAuth } from './useAuth';
+import { useProfile } from './useProfile';
 
 export const useTier = () => {
   const { isAuthenticated } = useAuth();
   const { data: profile } = useProfile();
 
   const tier: Tier = !isAuthenticated
-    ? "anonymous"
-    : (profile?.pricing_plan ?? "free");
+    ? 'anonymous'
+    : (profile?.pricing_plan ?? 'free');
 
   return {
     tier,

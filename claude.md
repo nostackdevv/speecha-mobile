@@ -48,6 +48,18 @@ Plus: Recording, Results, Auth
 - `npx expo run:ios` - Run on iOS simulator
 - `npx eas build` - Build for production
 
+## Verification
+
+After making changes, run verification to catch errors:
+
+- `npm run verify` - Run all checks (typecheck, lint, format, test)
+- `npm run typecheck` - TypeScript type checking
+- `npm run lint` - ESLint
+- `npm run format:check` - Prettier formatting
+- `npm run test` - Jest unit tests
+
+Always run `npm run verify` after making changes.
+
 ## Environment
 
 Required in `.env`:

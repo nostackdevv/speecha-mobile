@@ -1,7 +1,7 @@
-import { Directory, File, Paths } from "expo-file-system";
+import { Directory, File, Paths } from 'expo-file-system';
 
 const getRecordingsDir = (): Directory => {
-  return new Directory(Paths.document, "speecha/recordings");
+  return new Directory(Paths.document, 'speecha/recordings');
 };
 
 const getFile = (analysisId: string): File => {
@@ -51,9 +51,9 @@ export const audioRecordingStorage = {
     return contents
       .filter(
         (item): item is File =>
-          item instanceof File && item.uri.endsWith(".m4a"),
+          item instanceof File && item.uri.endsWith('.m4a')
       )
-      .map((file) => file.name.replace(".m4a", ""));
+      .map((file) => file.name.replace('.m4a', ''));
   },
 
   // Returns: in (bytes)

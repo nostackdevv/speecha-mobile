@@ -3,40 +3,48 @@ import {
   RecordingPresets,
   useAudioRecorder,
   useAudioRecorderState,
-} from "expo-audio";
-import { useCallback, useEffect, useRef, useState } from "react";
+} from 'expo-audio';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { LIMITS, Tier } from "@/constants/limits";
+import { LIMITS, Tier } from '@/constants/limits';
 
-type RecordingStatus = "idle" | "recording" | "paused" | "stopped";
+type RecordingStatus = 'idle' | 'recording' | 'paused' | 'stopped';
 
-type PermissionStatus = "undetermined" | "granted" | "denied";
+type PermissionStatus = 'undetermined' | 'granted' | 'denied';
 
 type UseRecordingParams = {
   tier?: Tier;
 };
 
-export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) => {
+export const useRecording = ({
+  tier = 'anonymous',
+}: UseRecordingParams = {}) => {
   const [permissionStatus, setPermissionStatus] =
-    useState<PermissionStatus>("undetermined");
-  const [status, setStatus] = useState<RecordingStatus>("idle");
+    useState<PermissionStatus>('undetermined');
+  const [status, setStatus] = useState<RecordingStatus>('idle');
   const [error, setError] = useState<string | null>(null);
 
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder, 100);
   const autoStopTriggeredRef = useRef(false);
 
-  const durationSeconds = Math.floor((recorderState.durationMillis ?? 0) / 1000);
+  const durationSeconds = Math.floor(
+    (recorderState.durationMillis ?? 0) / 1000
+  );
 
   const checkPermission = useCallback(async () => {
     try {
       const result = await AudioModule.getRecordingPermissionsAsync();
       setPermissionStatus(
-        result.granted ? "granted" : result.canAskAgain ? "undetermined" : "denied"
+        result.granted
+          ? 'granted'
+          : result.canAskAgain
+            ? 'undetermined'
+            : 'denied'
       );
       return result.granted;
     } catch {
-      setError("Failed to check microphone permission");
+      setError('Failed to check microphone permission');
       return false;
     }
   }, []);
@@ -45,25 +53,25 @@ export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) =>
     try {
       const result = await AudioModule.requestRecordingPermissionsAsync();
       const granted = result.granted;
-      setPermissionStatus(granted ? "granted" : "denied");
+      setPermissionStatus(granted ? 'granted' : 'denied');
       return granted;
     } catch {
-      setError("Failed to request microphone permission");
-      setPermissionStatus("denied");
+      setError('Failed to request microphone permission');
+      setPermissionStatus('denied');
       return false;
     }
   }, []);
 
   const start = useCallback(async () => {
-    if (status === "recording" || status === "paused") return false;
+    if (status === 'recording' || status === 'paused') return false;
 
     setError(null);
     autoStopTriggeredRef.current = false;
 
-    if (permissionStatus !== "granted") {
+    if (permissionStatus !== 'granted') {
       const granted = await requestPermission();
       if (!granted) {
-        setError("Microphone permission is required to record");
+        setError('Microphone permission is required to record');
         return false;
       }
     }
@@ -75,48 +83,48 @@ export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) =>
       });
       await audioRecorder.prepareToRecordAsync();
       audioRecorder.record();
-      setStatus("recording");
+      setStatus('recording');
       return true;
     } catch {
-      setError("Failed to start recording");
+      setError('Failed to start recording');
       return false;
     }
   }, [audioRecorder, permissionStatus, requestPermission, status]);
 
   const pause = useCallback(() => {
-    if (status !== "recording") return;
+    if (status !== 'recording') return;
     try {
       audioRecorder.pause();
-      setStatus("paused");
+      setStatus('paused');
     } catch {
-      setError("Failed to pause recording");
+      setError('Failed to pause recording');
     }
   }, [audioRecorder, status]);
 
   const resume = useCallback(() => {
-    if (status !== "paused") return;
+    if (status !== 'paused') return;
     try {
       audioRecorder.record();
-      setStatus("recording");
+      setStatus('recording');
     } catch {
-      setError("Failed to resume recording");
+      setError('Failed to resume recording');
     }
   }, [audioRecorder, status]);
 
   const stop = useCallback(async () => {
-    if (status !== "recording" && status !== "paused") return null;
+    if (status !== 'recording' && status !== 'paused') return null;
     try {
       await audioRecorder.stop();
-      setStatus("stopped");
+      setStatus('stopped');
       return audioRecorder.uri;
     } catch {
-      setError("Failed to stop recording");
+      setError('Failed to stop recording');
       return null;
     }
   }, [audioRecorder, status]);
 
   const reset = useCallback(() => {
-    setStatus("idle");
+    setStatus('idle');
     setError(null);
     autoStopTriggeredRef.current = false;
   }, []);
@@ -124,7 +132,7 @@ export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) =>
   // Auto-stop at max duration
   useEffect(() => {
     if (
-      status === "recording" &&
+      status === 'recording' &&
       durationSeconds >= LIMITS.MAX_RECORDING_DURATION_SECONDS[tier] &&
       !autoStopTriggeredRef.current
     ) {
@@ -152,7 +160,7 @@ export const useRecording = ({ tier = "anonymous" }: UseRecordingParams = {}) =>
   return {
     durationSeconds,
     error,
-    isRecording: status === "recording",
+    isRecording: status === 'recording',
     maxDuration: LIMITS.MAX_RECORDING_DURATION_SECONDS[tier],
     pause,
     permissionStatus,

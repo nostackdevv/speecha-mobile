@@ -1,22 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from '@/lib/supabase';
 import type {
   FriendProfile,
   FriendStats,
   Friendship,
   SearchedProfile,
-} from "@/types/database";
+} from '@/types/database';
 
-import { useAuth } from "./useAuth";
+import { useAuth } from './useAuth';
 
 export const useFriendList = () => {
   const { user } = useAuth();
 
   return useQuery<FriendProfile[]>({
-    queryKey: ["friend-list", user?.id],
+    queryKey: ['friend-list', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_friend_profiles");
+      const { data, error } = await supabase.rpc('get_friend_profiles');
 
       if (error) throw error;
       return data;
@@ -29,15 +29,15 @@ export const useFriendRequests = () => {
   const { user } = useAuth();
 
   return useQuery<Friendship[]>({
-    queryKey: ["friend-requests", user?.id],
+    queryKey: ['friend-requests', user?.id],
     queryFn: async () => {
-      if (!user?.id) throw new Error("User ID is required");
+      if (!user?.id) throw new Error('User ID is required');
 
       const { data, error } = await supabase
-        .from("friendships")
-        .select("*")
-        .eq("receiver_id", user.id)
-        .eq("status", "pending");
+        .from('friendships')
+        .select('*')
+        .eq('receiver_id', user.id)
+        .eq('status', 'pending');
 
       if (error) throw error;
       return data;
@@ -48,9 +48,9 @@ export const useFriendRequests = () => {
 
 export const useFriendStats = (profileId: string | undefined) => {
   return useQuery<FriendStats | null>({
-    queryKey: ["friend-stats", profileId],
+    queryKey: ['friend-stats', profileId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_friend_stats", {
+      const { data, error } = await supabase.rpc('get_friend_stats', {
         target_profile_id: profileId!,
       });
 
@@ -63,12 +63,12 @@ export const useFriendStats = (profileId: string | undefined) => {
 
 export const useSearchProfiles = (query: string) => {
   return useQuery<SearchedProfile[]>({
-    queryKey: ["search-profiles", query],
+    queryKey: ['search-profiles', query],
     queryFn: async () => {
-      const isEmail = query.includes("@");
+      const isEmail = query.includes('@');
       const { data, error } = isEmail
-        ? await supabase.rpc("search_profile_by_email", { search_email: query })
-        : await supabase.rpc("search_profile_by_username", {
+        ? await supabase.rpc('search_profile_by_email', { search_email: query })
+        : await supabase.rpc('search_profile_by_username', {
             search_username: query,
           });
 
@@ -85,10 +85,10 @@ export const useSendFriendRequest = () => {
 
   return useMutation({
     mutationFn: async (receiverId: string) => {
-      if (!user?.id) throw new Error("Not authenticated");
+      if (!user?.id) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from("friendships")
+        .from('friendships')
         .insert({ receiver_id: receiverId, sender_id: user.id })
         .select()
         .single();
@@ -97,8 +97,10 @@ export const useSendFriendRequest = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["friend-list", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["friend-requests", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['friend-list', user?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ['friend-requests', user?.id],
+      });
     },
   });
 };
@@ -113,18 +115,20 @@ export const useRespondToFriendRequest = () => {
       status,
     }: {
       id: string;
-      status: "accepted" | "rejected";
+      status: 'accepted' | 'rejected';
     }) => {
       const { error } = await supabase
-        .from("friendships")
+        .from('friendships')
         .update({ status })
-        .eq("id", id);
+        .eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["friend-list", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["friend-requests", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['friend-list', user?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ['friend-requests', user?.id],
+      });
     },
   });
 };
@@ -136,15 +140,17 @@ export const useRemoveFriend = () => {
   return useMutation({
     mutationFn: async (friendshipId: string) => {
       const { error } = await supabase
-        .from("friendships")
+        .from('friendships')
         .delete()
-        .eq("id", friendshipId);
+        .eq('id', friendshipId);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["friend-list", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["friend-requests", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['friend-list', user?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ['friend-requests', user?.id],
+      });
     },
   });
 };
