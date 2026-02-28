@@ -4,6 +4,7 @@ Speech improvement app that helps users reduce filler words through practice and
 
 ## Stack
 
+- ios only
 - Expo + React Native + TypeScript
 - Expo Router (file-based navigation)
 - NativeWind (Tailwind for RN)
@@ -22,14 +23,12 @@ Speech improvement app that helps users reduce filler words through practice and
 
 ## Auth
 
-- Apple and Google sign-in only
-- Anonymous usage allowed with limits
+- Apple and Google sign-in only (ignore if they are both not implemented yet, that will be done at the end)
 
 ## User Tiers
 
-- Anonymous: 3 recordings/day, 2 min max, no friends, local only
-- Free (signed in): 3 recordings/day, 2 min max, 3 friends max, cloud sync
-- Pro: Unlimited recordings, 2 min max, unlimited friends, cloud sync
+- Free (signed in): 3 recordings/day, 60s max, 3 friends max, cloud sync
+- Pro: Unlimited recordings, 120s max, unlimited friends, cloud sync
 
 ## Database Tables
 
@@ -44,8 +43,9 @@ Plus: Recording, Results, Auth
 
 ## Commands
 
-- `npx expo start` - Start dev server
-- `npx expo run:ios` - Run on iOS simulator
+- `npm run start` - Start dev server
+- `npm run ios` - Run on iOS simulator
+- `npm run android` - Run on Android emulator
 - `npx eas build` - Build for production
 
 ## Verification
@@ -90,6 +90,13 @@ Required in `.env`:
 - `/constants` - Static values (colors, prompts, limits)
 - `/types` - Shared TypeScript interfaces
 - `/assets` - Images, fonts
+
+## Non-obvious Patterns
+
+- Path alias: `@/*` maps to project root (configured in tsconfig.json)
+- Husky + lint-staged: pre-commit hook auto-runs ESLint on staged `.ts`/`.tsx` files
+- API calls go to an external Next.js app on Vercel (`EXPO_PUBLIC_API_URL`), not local — Deepgram and OpenAI keys live there
+- Supabase client uses AsyncStorage for session persistence (`lib/supabase.ts`)
 
 ## Do / Don't
 
