@@ -1,6 +1,6 @@
 # Speecha Mobile
 
-Speech improvement app that helps users reduce filler words through practice and AI-powered feedback. Users record and audio speaking and then get analysis of detected filler words in their speech. I already have a web app that was built in nextjs and the api routes was also hosted on vercel which had the deepgram and openai.
+Speech improvement app that helps users eliminate filler words through daily recording practice and AI-powered feedback. Users record themselves speaking, then receive analysis of detected filler words with a clarity score.
 
 ## Stack
 
@@ -23,7 +23,7 @@ Speech improvement app that helps users reduce filler words through practice and
 
 ## Auth
 
-- Apple and Google sign-in only (ignore if they are both not implemented yet, that will be done at the end)
+- Apple and Google sign-in only
 
 ## User Tiers
 
@@ -38,8 +38,7 @@ Speech improvement app that helps users reduce filler words through practice and
 
 ## Screens
 
-4 tabs: Home, History, Friends, Profile.
-Plus: Recording, Results, Auth
+3 tabs: Home, Progress, Friends (Profile pushed from Home avatar, not a tab)
 
 ## Commands
 
@@ -81,13 +80,19 @@ Required in `.env`:
 ## Folder Structure
 
 - `/app` - Screens and routes (Expo Router). Orchestrate components and hooks, no heavy logic.
-- `/components/ui` - Generic components (Button, Card, Input)
-- `/components/recording` - Recording-specific components
-- `/components/results` - Results-specific components
-- `/contexts` - React Context providers (auth, theme, feature flags). Singleton app state, not server state.
+- `/components/ui` - Generic reusable components (Button, Card, Avatar, SegmentedControl, etc.)
+- `/components/home` - Home tab components (StreakDisplay, WeekProgressDots, RecordingModeCard, LastSessionCard)
+- `/components/recording` - Recording UI (timer, controls, prompt display)
+- `/components/results` - Results display (ClarityScoreCircle, FillerBreakdown, HighlightedTranscript, AudioPlayer)
+- `/components/progress` - Progress tab components (StreakCards, WeekSummary, SessionHistoryItem, CalendarGrid)
+- `/components/friends` - Friends tab components (FriendListItem, FriendRequestItem, SearchFriendInput)
+- `/components/profile` - Profile components (ProfileHeader, BadgesPreview, ProUpgradeCard)
+- `/components/onboarding` - Onboarding flow (slides, pagination, auth buttons)
+- `/components/paywall` - Paywall UI (feature list, pricing toggle)
+- `/contexts` - React Context providers (auth). Singleton app state, not server state.
 - `/hooks` - Custom hooks with Supabase queries, use React Query
 - `/lib` - Supabase client, utils
-- `/constants` - Static values (colors, prompts, limits)
+- `/constants` - Static values (colors, prompts, limits, badges, archetypes)
 - `/types` - Shared TypeScript interfaces
 - `/assets` - Images, fonts
 
