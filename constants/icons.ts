@@ -5,6 +5,7 @@ import Bolt from '@/assets/icons/bolt.svg';
 import Bulb from '@/assets/icons/bulb.svg';
 import Chart from '@/assets/icons/chart.svg';
 import Check from '@/assets/icons/check.svg';
+import Checkmark from '@/assets/icons/checkmark.svg';
 import ChevronLeft from '@/assets/icons/chevron-left.svg';
 import Close from '@/assets/icons/close.svg';
 import Crown from '@/assets/icons/crown.svg';
@@ -13,9 +14,12 @@ import Fire from '@/assets/icons/fire.svg';
 import Home from '@/assets/icons/home.svg';
 import Medal from '@/assets/icons/medal.svg';
 import Mic from '@/assets/icons/mic.svg';
+import Pause from '@/assets/icons/pause.svg';
+import Play from '@/assets/icons/play.svg';
 import Prompt from '@/assets/icons/prompt.svg';
 import Question from '@/assets/icons/question.svg';
 import RotateBack from '@/assets/icons/rotate-back.svg';
+import SadFace from '@/assets/icons/sad-face.svg';
 import Settings from '@/assets/icons/settings.svg';
 import Trash from '@/assets/icons/trash.svg';
 import Trophy from '@/assets/icons/trophy.svg';
@@ -30,6 +34,7 @@ export const ICONS = {
   bulb: Bulb,
   chart: Chart,
   check: Check,
+  checkmark: Checkmark,
   chevronLeft: ChevronLeft,
   close: Close,
   crown: Crown,
@@ -38,9 +43,12 @@ export const ICONS = {
   home: Home,
   medal: Medal,
   mic: Mic,
+  pause: Pause,
+  play: Play,
   prompt: Prompt,
   question: Question,
   rotateBack: RotateBack,
+  sadFace: SadFace,
   settings: Settings,
   trash: Trash,
   trophy: Trophy,
