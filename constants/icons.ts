@@ -1,6 +1,8 @@
 import ArrowUp from '@/assets/icons/arrow-up.svg';
+import Bolt from '@/assets/icons/bolt.svg';
 import Bulb from '@/assets/icons/bulb.svg';
 import Chart from '@/assets/icons/chart.svg';
+import Check from '@/assets/icons/check.svg';
 import ChevronLeft from '@/assets/icons/chevron-left.svg';
 import Close from '@/assets/icons/close.svg';
 import Crown from '@/assets/icons/crown.svg';
@@ -19,10 +21,12 @@ import UserProfile from '@/assets/icons/user-profile.svg';
 import Users from '@/assets/icons/users.svg';
 
 export const ICONS = {
-  'arrow-up': ArrowUp,
+  arrowUp: ArrowUp,
+  bolt: Bolt,
   bulb: Bulb,
   chart: Chart,
-  'chevron-left': ChevronLeft,
+  check: Check,
+  chevronLeft: ChevronLeft,
   close: Close,
   crown: Crown,
   edit: Edit,
@@ -32,11 +36,11 @@ export const ICONS = {
   mic: Mic,
   prompt: Prompt,
   question: Question,
-  'rotate-back': RotateBack,
+  rotateBack: RotateBack,
   settings: Settings,
   trash: Trash,
   trophy: Trophy,
-  'user-profile': UserProfile,
+  userProfile: UserProfile,
   users: Users,
 } as const;
 

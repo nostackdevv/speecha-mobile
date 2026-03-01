@@ -11,7 +11,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: COLORS.clarityBlue.DEFAULT,
         tabBarInactiveTintColor: COLORS.grey[400],
         tabBarLabelStyle: {
-          fontFamily: '.SFProRounded-Medium',
+          fontFamily: 'SFProRounded-Medium',
           fontSize: 10,
         },
         tabBarStyle: {

@@ -1,0 +1,23 @@
+import { Text, View } from 'react-native';
+
+import { Avatar } from '../ui/Avatar';
+
+interface HomeHeaderProps {
+  date: string;
+  name: string;
+  onAvatarPress: () => void;
+}
+
+export const HomeHeader = ({ date, name, onAvatarPress }: HomeHeaderProps) => (
+  <View className="flex-row items-center justify-between">
+    <View>
+      <Text className="font-sf-rounded-semibold text-body-xl text-black">
+        Welcome back, {name} 👋
+      </Text>
+      <Text className="font-sf-rounded-medium text-body-sm text-grey-500">
+        {date}
+      </Text>
+    </View>
+    <Avatar onPress={onAvatarPress} size="md" />
+  </View>
+);

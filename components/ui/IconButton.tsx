@@ -23,6 +23,7 @@ const ICON_COLORS = {
 } as const;
 
 interface IconButtonProps {
+  accessibilityLabel: string;
   className?: string;
   disabled?: boolean;
   haptic?: boolean;
@@ -33,6 +34,7 @@ interface IconButtonProps {
 }
 
 export const IconButton = ({
+  accessibilityLabel,
   className,
   disabled,
   haptic = true,
@@ -50,6 +52,8 @@ export const IconButton = ({
 
   return (
     <Pressable
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole="button"
       className={cn(
         'items-center justify-center rounded-full',
         VARIANT_CLASSES[variant],

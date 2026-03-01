@@ -52,6 +52,7 @@ export const SegmentedControl = ({
 
   return (
     <View
+      accessibilityRole="tablist"
       className={cn('h-12 flex-row rounded-32 bg-grey-100 p-1', className)}
       onLayout={(e) => {
         setContainerWidth(e.nativeEvent.layout.width - PADDING_INSET);
@@ -66,6 +67,9 @@ export const SegmentedControl = ({
       )}
       {segments.map((segment) => (
         <Pressable
+          accessibilityLabel={segment}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: segment === selectedValue }}
           className="flex-1 items-center justify-center"
           key={segment}
           onPress={() => handlePress(segment)}

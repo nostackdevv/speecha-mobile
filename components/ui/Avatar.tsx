@@ -77,7 +77,7 @@ export const Avatar = ({
         >
           <Icon
             color={COLORS.grey[400]}
-            name="user-profile"
+            name="userProfile"
             size={fallbackIcon}
           />
         </View>

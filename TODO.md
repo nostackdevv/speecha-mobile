@@ -1,0 +1,3 @@
+- IconButton
+- <IconButton icon="close" onPress={router.back} variant="ghost" />
+- <IconButton icon="question" onPress={() => router.push('/how-speecha-works')} size={36} variant="ghost" />

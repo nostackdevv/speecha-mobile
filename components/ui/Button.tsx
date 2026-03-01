@@ -9,18 +9,19 @@ import type { IconName } from '@/constants/icons';
 import { Icon } from './Icon';
 
 interface ButtonProps {
+  accessibilityLabel?: string;
   className?: string;
   disabled?: boolean;
   fullWidth?: boolean;
   haptic?: boolean;
   icon?: IconName;
-  loading?: boolean;
   onPress: () => void;
   title: string;
   variant?: 'primary' | 'secondary';
 }
 
 export const Button = ({
+  accessibilityLabel,
   className,
   disabled,
   fullWidth,
@@ -41,6 +42,8 @@ export const Button = ({
 
   return (
     <Pressable
+      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityRole="button"
       className={cn(
         'h-14 flex-row items-center justify-center rounded-32 px-7',
         isPrimary ? 'bg-clarity-blue' : 'bg-grey-100',
