@@ -1,4 +1,6 @@
+import ArrowLeft from '@/assets/icons/arrow-left.svg';
 import ArrowUp from '@/assets/icons/arrow-up.svg';
+import ArrowUpRight from '@/assets/icons/arrow-up-right.svg';
 import Bolt from '@/assets/icons/bolt.svg';
 import Bulb from '@/assets/icons/bulb.svg';
 import Chart from '@/assets/icons/chart.svg';
@@ -21,7 +23,9 @@ import UserProfile from '@/assets/icons/user-profile.svg';
 import Users from '@/assets/icons/users.svg';
 
 export const ICONS = {
+  arrowLeft: ArrowLeft,
   arrowUp: ArrowUp,
+  arrowUpRight: ArrowUpRight,
   bolt: Bolt,
   bulb: Bulb,
   chart: Chart,
