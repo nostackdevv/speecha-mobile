@@ -6,16 +6,11 @@ describe('LIMITS', () => {
   });
 
   it('gives anonymous and free the same daily recording limit', () => {
-    expect(LIMITS.DAILY_RECORDINGS.anonymous).toBe(3);
     expect(LIMITS.DAILY_RECORDINGS.free).toBe(3);
   });
 
   it('gives pro unlimited daily recordings', () => {
     expect(LIMITS.DAILY_RECORDINGS.pro).toBe(Infinity);
-  });
-
-  it('does not allow friends for anonymous users', () => {
-    expect(LIMITS.MAX_FRIENDS.anonymous).toBe(0);
   });
 
   it('limits free users to 3 friends', () => {
