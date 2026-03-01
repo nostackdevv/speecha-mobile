@@ -60,7 +60,7 @@ export default function HomeScreen() {
             <RecordingModeCard
               color="orange"
               icon="prompt"
-              onPress={() => {}}
+              onPress={() => router.push('/prompt-categories')}
               title={'Pick a\nPrompt'}
             />
           </View>

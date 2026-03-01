@@ -42,6 +42,11 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="dev" options={{ headerShown: false }} />
         <Stack.Screen
+          name="prompt-categories"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="prompt-list" options={{ headerShown: false }} />
+        <Stack.Screen
           name="how-speecha-works"
           options={{
             headerShown: false,
