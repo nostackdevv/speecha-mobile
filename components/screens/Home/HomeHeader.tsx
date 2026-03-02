@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { Avatar } from '../ui/Avatar';
+import { Avatar } from '@/components/ui/Avatar';
 
 interface HomeHeaderProps {
   date: string;

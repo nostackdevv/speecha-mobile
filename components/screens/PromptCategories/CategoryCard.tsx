@@ -25,7 +25,7 @@ export const CategoryCard = ({ category, onPress }: CategoryCardProps) => {
       className="flex-1 gap-4"
     >
       <View
-        className="bg-grey-100 h-[140px] w-full items-center justify-center overflow-hidden rounded-[16px]"
+        className="h-[140px] w-full items-center justify-center overflow-hidden rounded-[16px] bg-grey-100"
         style={{ borderCurve: 'continuous' }}
       >
         <Image
@@ -38,7 +38,7 @@ export const CategoryCard = ({ category, onPress }: CategoryCardProps) => {
         <Text className="font-sf-rounded-semibold text-body-xl text-black">
           {category.name}
         </Text>
-        <Text className="font-sf-rounded-semibold text-grey-500 text-[15px]">
+        <Text className="font-sf-rounded-semibold text-[15px] text-grey-500">
           {category.promptCount} Prompts
         </Text>
       </View>
