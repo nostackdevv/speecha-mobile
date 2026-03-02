@@ -19,7 +19,7 @@ export const ScreenHeader = ({ title }: ScreenHeaderProps) => {
         size={48}
         variant="filled"
       />
-      <Text className="font-sf-rounded-semibold text-h4 flex-1 text-center text-black">
+      <Text className="flex-1 text-center font-sf-rounded-semibold text-h4 text-black">
         {title}
       </Text>
       <View className="h-12 w-12" />
