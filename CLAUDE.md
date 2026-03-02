@@ -41,7 +41,9 @@ Always run `npm run verify` after making changes.
 
 ## Conventions
 
-- File naming: camelCase for hooks (`useAuth.ts`), PascalCase for components and contexts (`Button.tsx`, `AuthContext.tsx`), lowercase for screens (`profile.tsx`). Use `.tsx` only when file contains JSX, otherwise `.ts`
+- File naming: camelCase for hooks (`useAuth.ts`), PascalCase for components and contexts (`Button.tsx`, `AuthContext.tsx`), lowercase for route files (`profile.tsx`). Use `.tsx` only when file contains JSX, otherwise `.ts`
+- Screen directories: PascalCase matching screen name (e.g., `Home/`, `PromptCategories/`). Main file is always `index.tsx`.
+- Route files: Thin wrappers only — import screen component and return it. All logic lives in `/components/screens/[ScreenName]/`.
 - Exports: Named exports with arrow functions (`export const Button = () => {}`)
 - Styling: NativeWind only, no StyleSheet.create(). Use standard Tailwind classes that maps to the design (px-3, gap-2, h-14) — only use arbitrary values like px-[29px] when no standard utility exists.
 - Styling helpers: Use `cn()` from `lib/cn.ts` (clsx + tailwind-merge) for conditional/merged classNames — never raw template strings
@@ -50,14 +52,11 @@ Always run `npm run verify` after making changes.
 
 ## Folder Structure
 
-- `/app` - Screens and routes (Expo Router). Orchestrate components and hooks, no heavy logic.
+- `/app` - Route files only (Expo Router). Thin wrappers (5-10 lines) that import and return a single screen component. No logic, no JSX beyond the component.
+- `/components/screens/[ScreenName]` - Screen implementations. Each screen has its own PascalCase directory (e.g., `Home/`, `Friends/`, `PromptCategories/`) containing the main component (`index.tsx`) and related sub-components.
 - `/components/ui` - Generic reusable components. Always check here before creating new UI primitives.
-- `/components/home` - Home tab components (HomeHeader, StreakCard, RecordingModeCard, WeekProgressDots)
 - `/components/recording` - Recording UI (timer, controls, prompt display)
 - `/components/results` - Results display (ClarityScoreCircle, FillerBreakdown, HighlightedTranscript, AudioPlayer)
-- `/components/progress` - Progress tab components (StreakCards, WeekSummary, SessionHistoryItem, CalendarGrid)
-- `/components/friends` - Friends tab components (FriendListItem, FriendRequestItem, SearchFriendInput)
-- `/components/profile` - Profile components (ProfileHeader, BadgesPreview, ProUpgradeCard)
 - `/components/onboarding` - Onboarding flow (slides, pagination, auth buttons)
 - `/components/paywall` - Paywall UI (feature list, pricing toggle)
 - `/contexts` - React Context providers (auth). Singleton app state, not server state.
@@ -69,6 +68,7 @@ Always run `npm run verify` after making changes.
 
 ## Non-obvious Patterns
 
+- Thin routes pattern: Route files (e.g., `app/(tabs)/index.tsx`) should be 5-10 lines max. Just import and return a screen component from `/components/screens/`. Example: `export default function HomeScreen() { return <Home />; }`
 - Path alias: `@/*` maps to project root (configured in tsconfig.json)
 - Environment: Copy `.env.example` → `.env` and fill in values. Required: `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, `EXPO_PUBLIC_API_URL`
 - Husky + lint-staged: pre-commit hook auto-runs ESLint on staged `.ts`/`.tsx` files

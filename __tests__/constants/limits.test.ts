@@ -2,10 +2,10 @@ import { LIMITS, TIERS } from '@/constants/limits';
 
 describe('LIMITS', () => {
   it('defines all tiers', () => {
-    expect(TIERS).toEqual(['anonymous', 'free', 'pro']);
+    expect(TIERS).toEqual(['free', 'pro']);
   });
 
-  it('gives anonymous and free the same daily recording limit', () => {
+  it('gives free the same daily recording limit', () => {
     expect(LIMITS.DAILY_RECORDINGS.free).toBe(3);
   });
 

@@ -1,10 +1,10 @@
 import { Text, View } from 'react-native';
 
+import { Card } from '@/components/ui/Card';
+import { Icon } from '@/components/ui/Icon';
 import { COLORS } from '@/constants/colors';
 import { cn } from '@/lib/cn';
 
-import { Card } from '../ui/Card';
-import { Icon } from '../ui/Icon';
 import { WeekProgressDots } from './WeekProgressDots';
 
 interface StreakCardProps {

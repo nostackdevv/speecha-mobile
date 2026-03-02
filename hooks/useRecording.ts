@@ -16,9 +16,7 @@ type UseRecordingParams = {
   tier?: Tier;
 };
 
-export const useRecording = ({
-  tier = 'anonymous',
-}: UseRecordingParams = {}) => {
+export const useRecording = ({ tier = 'free' }: UseRecordingParams = {}) => {
   const [permissionStatus, setPermissionStatus] =
     useState<PermissionStatus>('undetermined');
   const [status, setStatus] = useState<RecordingStatus>('idle');

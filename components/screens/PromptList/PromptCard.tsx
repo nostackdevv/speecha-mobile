@@ -21,17 +21,17 @@ export const PromptCard = ({ onPress, prompt }: PromptCardProps) => {
     <Pressable
       accessibilityLabel={prompt.text}
       accessibilityRole="button"
-      className="rounded-20 bg-grey-50 flex-row items-center gap-4 py-4 pl-5 pr-3"
+      className="flex-row items-center gap-4 rounded-20 bg-grey-50 py-4 pl-5 pr-3"
       onPress={handlePress}
       style={({ pressed }) => ({
         borderCurve: 'continuous',
         opacity: pressed ? 0.85 : 1,
       })}
     >
-      <Text className="font-sf-rounded-semibold text-body-lg flex-1 text-black">
+      <Text className="flex-1 font-sf-rounded-semibold text-body-lg text-black">
         {prompt.text}
       </Text>
-      <View className="bg-grey-100 h-12 w-12 items-center justify-center rounded-full">
+      <View className="h-12 w-12 items-center justify-center rounded-full bg-grey-100">
         <Icon
           color={COLORS.clarityBlue.DEFAULT}
           name="arrowUpRight"

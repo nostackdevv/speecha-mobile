@@ -1,12 +1,11 @@
 import * as Haptics from 'expo-haptics';
 import { Pressable, Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { COLORS } from '@/constants/colors';
 import { cn } from '@/lib/cn';
 
 import type { IconName } from '@/constants/icons';
-
-import { Icon } from '../ui/Icon';
 
 const VARIANTS = {
   blue: {

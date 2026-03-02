@@ -1,11 +1,5 @@
-import { Text, View } from 'react-native';
+import { Friends } from '@/components/screens/Friends';
 
-export const FriendsScreen = () => {
-  return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-black">Friends</Text>
-    </View>
-  );
-};
-
-export default FriendsScreen;
+export default function FriendsScreen() {
+  return <Friends />;
+}

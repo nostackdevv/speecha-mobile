@@ -1,9 +1,8 @@
 import { Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/Icon';
 import { COLORS } from '@/constants/colors';
 import { cn } from '@/lib/cn';
-
-import { Icon } from '../ui/Icon';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 
