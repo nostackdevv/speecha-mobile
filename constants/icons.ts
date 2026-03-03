@@ -12,6 +12,7 @@ import Crown from '@/assets/icons/crown.svg';
 import Edit from '@/assets/icons/edit.svg';
 import Fire from '@/assets/icons/fire.svg';
 import Home from '@/assets/icons/home.svg';
+import Loader from '@/assets/icons/loader.svg';
 import Medal from '@/assets/icons/medal.svg';
 import Mic from '@/assets/icons/mic.svg';
 import Pause from '@/assets/icons/pause.svg';
@@ -41,6 +42,7 @@ export const ICONS = {
   edit: Edit,
   fire: Fire,
   home: Home,
+  loader: Loader,
   medal: Medal,
   mic: Mic,
   pause: Pause,

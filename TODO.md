@@ -6,6 +6,7 @@
 - is Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); actually
 - review all pressable opacity
 - review all accessibility
+- add `border-curve-continuous` Tailwind utility to replace inline `style={{ borderCurve: 'continuous' }}`
 
 Code Review
 
