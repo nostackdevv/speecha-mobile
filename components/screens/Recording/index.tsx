@@ -97,17 +97,20 @@ export const Recording = () => {
   };
 
   if (analysis.isPending) {
-    return <AnalyzingView status={analysis.status} />;
+    return (
+      <AnalyzingView status={analysis.status} testID="recording.analyzing" />
+    );
   }
 
   if (analysis.error) {
-    return <ErrorView onTryAgain={handleTryAgain} />;
+    return <ErrorView onTryAgain={handleTryAgain} testID="recording.error" />;
   }
 
   return (
     <View
       className="flex-1 bg-clarity-blue-0 px-6"
       style={{ paddingTop: insets.top }}
+      testID="recording.screen"
     >
       <View className="flex-row justify-end py-4">
         <IconButton
@@ -115,6 +118,7 @@ export const Recording = () => {
           className="size-12 rounded-32 border border-white/50 bg-white/20"
           icon="close"
           onPress={handleClose}
+          testID="recording.close"
           variant="ghost"
         />
       </View>
@@ -124,11 +128,11 @@ export const Recording = () => {
         style={{ paddingBottom: insets.bottom + 16 }}
       >
         <View className="pt-4">
-          <PromptDisplay text={prompt} />
+          <PromptDisplay testID="recording.prompt" text={prompt} />
         </View>
 
         <View className="items-center">
-          <Timer seconds={recording.durationSeconds} />
+          <Timer seconds={recording.durationSeconds} testID="recording.timer" />
         </View>
 
         <RecordingControls
@@ -137,12 +141,18 @@ export const Recording = () => {
           onStart={handleStartRecording}
           onSubmit={handleSubmitRecording}
           state={recording.status}
+          testID="recording.controls"
         />
       </View>
 
-      <TooShortSheet onResume={handleResume} visible={showTooShortSheet} />
+      <TooShortSheet
+        onResume={handleResume}
+        testID="recording.too-short-sheet"
+        visible={showTooShortSheet}
+      />
       <PermissionDeniedSheet
         onDismiss={handleDismissPermission}
+        testID="recording.permission-sheet"
         visible={showPermissionSheet}
       />
     </View>

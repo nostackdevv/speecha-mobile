@@ -30,7 +30,7 @@ export const HowSpeechaWorks = () => {
   const router = useRouter();
 
   return (
-    <View className="gap-8 bg-white px-6 pt-10">
+    <View className="gap-8 bg-white px-6 pt-10" testID="how-it-works.screen">
       <View className="flex-row items-center justify-between">
         <Text className="font-sf-rounded-semibold text-h4 text-black">
           How Speecha works
@@ -40,6 +40,7 @@ export const HowSpeechaWorks = () => {
           icon="close"
           className="h-12 w-12 rounded-full"
           onPress={router.back}
+          testID="how-it-works.close"
           variant="ghost"
         />
       </View>
@@ -70,7 +71,12 @@ export const HowSpeechaWorks = () => {
       </View>
 
       <View>
-        <Button fullWidth onPress={router.back} title="Got it!" />
+        <Button
+          fullWidth
+          onPress={router.back}
+          testID="how-it-works.got-it"
+          title="Got it!"
+        />
       </View>
     </View>
   );

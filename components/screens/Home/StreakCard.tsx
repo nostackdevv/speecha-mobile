@@ -17,7 +17,7 @@ export const StreakCard = ({ completedDays, streak }: StreakCardProps) => {
   const accentColor = isActive ? COLORS.clarityBlue.DEFAULT : COLORS.grey[400];
 
   return (
-    <Card className="items-center gap-8 rounded-24">
+    <Card className="items-center gap-8 rounded-24" testID="home.streak-card">
       <View
         accessibilityLabel={`${streak} day streak${isActive ? '' : ', lost'}`}
         accessibilityRole="text"

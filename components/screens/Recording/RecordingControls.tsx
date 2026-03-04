@@ -26,6 +26,7 @@ interface RecordingControlsProps {
   onStart: () => void;
   onSubmit: () => void;
   state: ControlState;
+  testID?: string;
 }
 
 export const RecordingControls = ({
@@ -34,6 +35,7 @@ export const RecordingControls = ({
   onStart,
   onSubmit,
   state,
+  testID,
 }: RecordingControlsProps) => {
   const isIdle = state === 'idle';
   const isStopped = state === 'stopped';
@@ -85,6 +87,7 @@ export const RecordingControls = ({
                 icon={config.icon}
                 iconSize={isIdle ? 40 : 22.5}
                 onPress={action}
+                testID={testID ? `${testID}.${state}-btn` : undefined}
                 variant="primary"
               />
             </Animated.View>
@@ -101,6 +104,7 @@ export const RecordingControls = ({
                 icon="checkmark"
                 iconSize={22.5}
                 onPress={onSubmit}
+                testID={testID ? `${testID}.submit-btn` : undefined}
                 variant="light"
               />
             </Animated.View>

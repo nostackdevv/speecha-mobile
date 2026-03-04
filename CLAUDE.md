@@ -49,6 +49,7 @@ Always run `npm run verify` after making changes.
 - Styling helpers: Use `cn()` from `lib/cn.ts` (clsx + tailwind-merge) for conditional/merged classNames — never raw template strings
 - Functions: Arrow functions everywhere (components, hooks, utils, callbacks)
 - iOS cards: Use `style={{ borderCurve: 'continuous' }}` on rounded containers for smooth iOS corners
+- testID naming: `{screen}.{element}` format (e.g., `home.record-random`, `recording.submit-btn`, `friends.screen`). All interactive UI primitives (Button, IconButton, Avatar, SegmentedControl, BottomSheet) accept an optional `testID` prop. Always add `testID` to new interactive elements and screen root views for Expo MCP automation.
 
 ## Folder Structure
 

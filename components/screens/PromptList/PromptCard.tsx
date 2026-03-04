@@ -9,9 +9,10 @@ import type { Prompt } from '@/types/prompts';
 interface PromptCardProps {
   onPress: () => void;
   prompt: Prompt;
+  testID?: string;
 }
 
-export const PromptCard = ({ onPress, prompt }: PromptCardProps) => {
+export const PromptCard = ({ onPress, prompt, testID }: PromptCardProps) => {
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress();
@@ -23,6 +24,7 @@ export const PromptCard = ({ onPress, prompt }: PromptCardProps) => {
       accessibilityRole="button"
       className="flex-row items-center gap-4 rounded-20 bg-grey-50 py-4 pl-5 pr-3"
       onPress={handlePress}
+      testID={testID}
       style={({ pressed }) => ({
         borderCurve: 'continuous',
         opacity: pressed ? 0.85 : 1,

@@ -34,6 +34,7 @@ interface IconButtonProps {
   icon: IconName;
   iconSize?: number;
   onPress?: () => void;
+  testID?: string;
   variant?: IconButtonVariant;
 }
 
@@ -45,6 +46,7 @@ export const IconButton = ({
   icon,
   iconSize,
   onPress,
+  testID,
   variant = 'filled',
 }: IconButtonProps) => {
   const handlePress = () => {
@@ -58,6 +60,7 @@ export const IconButton = ({
     <Pressable
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
+      testID={testID}
       className={cn(
         'items-center justify-center',
         VARIANT_CLASSES[variant],

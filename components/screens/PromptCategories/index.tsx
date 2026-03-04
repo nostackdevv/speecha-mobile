@@ -14,6 +14,7 @@ export const PromptCategories = () => {
       data={PROMPT_CATEGORIES}
       numColumns={2}
       keyExtractor={(item) => item.id}
+      testID="prompt-categories.screen"
       contentContainerClassName="px-6 pb-14 pt-4 gap-8"
       columnWrapperClassName="gap-5 flex-1 space-around"
       contentInsetAdjustmentBehavior="automatic"
@@ -28,6 +29,7 @@ export const PromptCategories = () => {
               params: { categoryId: item.id },
             })
           }
+          testID={`prompt-categories.${item.id}`}
         />
       )}
     />

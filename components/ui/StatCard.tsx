@@ -5,11 +5,18 @@ import { cn } from '@/lib/cn';
 interface StatCardProps {
   className?: string;
   label: string;
+  testID?: string;
   value: string;
 }
 
-export const StatCard = ({ className, label, value }: StatCardProps) => (
+export const StatCard = ({
+  className,
+  label,
+  testID,
+  value,
+}: StatCardProps) => (
   <View
+    testID={testID}
     className={cn(
       'h-[120px] items-center justify-center rounded-20 bg-grey-100',
       className

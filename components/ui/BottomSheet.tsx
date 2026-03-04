@@ -14,6 +14,7 @@ interface BottomSheetProps {
   icon: IconName;
   iconSize?: number;
   onAction: () => void;
+  testID?: string;
   title: string;
   visible: boolean;
 }
@@ -24,6 +25,7 @@ export const BottomSheet = ({
   icon,
   iconSize = 70,
   onAction,
+  testID,
   title,
   visible,
 }: BottomSheetProps) => {
@@ -45,6 +47,7 @@ export const BottomSheet = ({
               className="rounded-t-40 bg-white px-6 pb-6 pt-10"
               onPress={(e) => e.stopPropagation()}
               style={{ borderCurve: 'continuous' }}
+              testID={testID}
             >
               <View className="items-center gap-8">
                 <View className="size-[88px] items-center justify-center">
@@ -68,6 +71,7 @@ export const BottomSheet = ({
                 <Button
                   className="h-[60px] w-full"
                   onPress={onAction}
+                  testID={testID ? `${testID}.action-btn` : undefined}
                   title={actionLabel}
                 />
               </View>

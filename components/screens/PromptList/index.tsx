@@ -22,6 +22,7 @@ export const PromptList = () => {
       contentContainerClassName="px-6 pb-14 pt-4"
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
+      testID="prompt-list.screen"
     >
       <View className="gap-8">
         <ScreenHeader title="Pick a prompt" />
@@ -37,6 +38,7 @@ export const PromptList = () => {
                 })
               }
               prompt={prompt}
+              testID={`prompt-list.${prompt.id}`}
             />
           ))}
         </View>

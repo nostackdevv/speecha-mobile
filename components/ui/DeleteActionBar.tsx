@@ -9,11 +9,13 @@ import { Icon } from './Icon';
 interface DeleteActionBarProps {
   onClose: () => void;
   onDelete: () => void;
+  testID?: string;
 }
 
 export const DeleteActionBar = ({
   onClose,
   onDelete,
+  testID,
 }: DeleteActionBarProps) => {
   const insets = useSafeAreaInsets();
 
@@ -40,6 +42,7 @@ export const DeleteActionBar = ({
         <Pressable
           className="flex-1 flex-row items-center justify-center rounded-32 bg-error-500 p-3"
           onPress={handleDelete}
+          testID={testID ? `${testID}.delete-btn` : undefined}
           style={({ pressed }) => ({
             borderCurve: 'continuous',
             gap: 8,
@@ -56,6 +59,7 @@ export const DeleteActionBar = ({
         <Pressable
           className="items-center justify-center rounded-32 bg-grey-400"
           onPress={handleClose}
+          testID={testID ? `${testID}.close-btn` : undefined}
           style={({ pressed }) => ({
             borderCurve: 'continuous',
             height: 56,

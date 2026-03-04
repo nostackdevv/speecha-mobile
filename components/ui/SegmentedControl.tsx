@@ -14,6 +14,7 @@ interface SegmentedControlProps {
   onValueChange: (value: string) => void;
   segments: string[];
   selectedValue: string;
+  testID?: string;
 }
 
 const PADDING_INSET = 8;
@@ -23,6 +24,7 @@ export const SegmentedControl = ({
   onValueChange,
   segments,
   selectedValue,
+  testID,
 }: SegmentedControlProps) => {
   const selectedIndex = segments.indexOf(selectedValue);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -54,6 +56,7 @@ export const SegmentedControl = ({
     <View
       accessibilityRole="tablist"
       className={cn('h-12 flex-row rounded-32 bg-grey-100 p-1', className)}
+      testID={testID}
       onLayout={(e) => {
         setContainerWidth(e.nativeEvent.layout.width - PADDING_INSET);
       }}
@@ -73,6 +76,11 @@ export const SegmentedControl = ({
           className="flex-1 items-center justify-center"
           key={segment}
           onPress={() => handlePress(segment)}
+          testID={
+            testID
+              ? `${testID}.${segment.toLowerCase().replace(/\s+/g, '-')}`
+              : undefined
+          }
         >
           <Text
             className={cn(

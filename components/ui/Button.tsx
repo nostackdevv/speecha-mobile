@@ -16,6 +16,7 @@ interface ButtonProps {
   haptic?: boolean;
   icon?: IconName;
   onPress: () => void;
+  testID?: string;
   title: string;
   variant?: 'primary' | 'secondary';
 }
@@ -28,6 +29,7 @@ export const Button = ({
   haptic = true,
   icon,
   onPress,
+  testID,
   title,
   variant = 'primary',
 }: ButtonProps) => {
@@ -44,6 +46,7 @@ export const Button = ({
     <Pressable
       accessibilityLabel={accessibilityLabel ?? title}
       accessibilityRole="button"
+      testID={testID}
       className={cn(
         'h-14 flex-row items-center justify-center rounded-32 px-7',
         isPrimary ? 'bg-clarity-blue' : 'bg-grey-100',

@@ -7,15 +7,17 @@ import alertImage from '@/assets/images/alert.png';
 
 interface ErrorViewProps {
   onTryAgain: () => void;
+  testID?: string;
 }
 
-export const ErrorView = ({ onTryAgain }: ErrorViewProps) => {
+export const ErrorView = ({ onTryAgain, testID }: ErrorViewProps) => {
   const insets = useSafeAreaInsets();
 
   return (
     <View
       className="flex-1 items-center justify-center bg-white px-6"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+      testID={testID}
     >
       <View className="items-center gap-10">
         <Image
@@ -39,6 +41,7 @@ export const ErrorView = ({ onTryAgain }: ErrorViewProps) => {
           <Button
             className="h-12 w-[140px]"
             onPress={onTryAgain}
+            testID={testID ? `${testID}.try-again-btn` : undefined}
             title="Try again!"
           />
         </View>

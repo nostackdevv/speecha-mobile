@@ -50,6 +50,7 @@ interface AvatarProps {
   ringColor?: string;
   showOnlineIndicator?: boolean;
   size?: 'lg' | 'md' | 'sm';
+  testID?: string;
 }
 
 export const Avatar = ({
@@ -58,6 +59,7 @@ export const Avatar = ({
   ringColor,
   showOnlineIndicator,
   size = 'md',
+  testID,
 }: AvatarProps) => {
   const { avatar, fallbackIcon } = SIZES[size];
   const showRing = !!ringColor;
@@ -96,6 +98,7 @@ export const Avatar = ({
       <Pressable
         onPress={onPress}
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+        testID={testID}
       >
         {content}
       </Pressable>

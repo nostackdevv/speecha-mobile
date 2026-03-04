@@ -24,6 +24,7 @@ interface RecordingModeCardProps {
   color: 'blue' | 'orange';
   icon: IconName;
   onPress: () => void;
+  testID?: string;
   title: string;
 }
 
@@ -31,6 +32,7 @@ export const RecordingModeCard = ({
   color,
   icon,
   onPress,
+  testID,
   title,
 }: RecordingModeCardProps) => {
   const variant = VARIANTS[color];
@@ -44,6 +46,7 @@ export const RecordingModeCard = ({
     <Pressable
       accessibilityLabel={title}
       accessibilityRole="button"
+      testID={testID}
       className={cn('flex-1 rounded-2xl px-5 py-5', variant.bg)}
       onPress={handlePress}
       style={({ pressed }) => ({

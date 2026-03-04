@@ -23,9 +23,13 @@ const PHASE_MESSAGES: Record<AnalysisStatus, string> = {
 
 interface AnalyzingViewProps {
   status?: AnalysisStatus;
+  testID?: string;
 }
 
-export const AnalyzingView = ({ status = 'idle' }: AnalyzingViewProps) => {
+export const AnalyzingView = ({
+  status = 'idle',
+  testID,
+}: AnalyzingViewProps) => {
   const insets = useSafeAreaInsets();
   const rotation = useSharedValue(0);
 
@@ -45,6 +49,7 @@ export const AnalyzingView = ({ status = 'idle' }: AnalyzingViewProps) => {
     <View
       className="flex-1 items-center justify-center bg-white"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+      testID={testID}
     >
       <View className="items-center gap-4">
         <Animated.View

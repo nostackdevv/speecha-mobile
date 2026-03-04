@@ -6,9 +6,14 @@ import type { PromptCategory } from '@/types/prompts';
 interface CategoryCardProps {
   category: PromptCategory;
   onPress: () => void;
+  testID?: string;
 }
 
-export const CategoryCard = ({ category, onPress }: CategoryCardProps) => {
+export const CategoryCard = ({
+  category,
+  onPress,
+  testID,
+}: CategoryCardProps) => {
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress();
@@ -22,6 +27,7 @@ export const CategoryCard = ({ category, onPress }: CategoryCardProps) => {
       style={({ pressed }) => ({
         opacity: pressed ? 0.85 : 1,
       })}
+      testID={testID}
       className="flex-1 gap-4"
     >
       <View

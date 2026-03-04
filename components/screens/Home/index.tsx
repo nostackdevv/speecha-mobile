@@ -29,6 +29,7 @@ export const Home = () => {
       contentContainerClassName="px-6 pb-10 pt-16"
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
+      testID="home.screen"
     >
       <View className="gap-8">
         <HomeHeader
@@ -48,6 +49,7 @@ export const Home = () => {
               className="h-9 w-9 rounded-full"
               iconSize={18}
               onPress={() => router.push('/how-speecha-works')}
+              testID="home.how-it-works"
               variant="ghost"
             />
           </View>
@@ -65,12 +67,14 @@ export const Home = () => {
                   },
                 })
               }
+              testID="home.record-random"
               title={'Random\nPractice'}
             />
             <RecordingModeCard
               color="orange"
               icon="prompt"
               onPress={() => router.push('/prompt-categories')}
+              testID="home.record-prompt"
               title={'Pick a\nPrompt'}
             />
           </View>
@@ -82,7 +86,7 @@ export const Home = () => {
             trailing={MOCK_LAST_SESSION.timeAgo}
           />
 
-          <Card>
+          <Card testID="home.last-session">
             <View className="flex-row items-center justify-between">
               <Text className="font-sf-rounded-medium text-body-md text-black">
                 {MOCK_LAST_SESSION.prompt}

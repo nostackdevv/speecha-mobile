@@ -8,6 +8,7 @@ export const Results = () => {
     <View
       className="flex-1 items-center justify-center bg-white"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+      testID="results.screen"
     >
       <Text className="font-sf-rounded-semibold text-h4 text-black">
         Result Screen here

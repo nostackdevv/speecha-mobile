@@ -18,6 +18,6 @@ export const HomeHeader = ({ date, name, onAvatarPress }: HomeHeaderProps) => (
         {date}
       </Text>
     </View>
-    <Avatar onPress={onAvatarPress} size="md" />
+    <Avatar onPress={onAvatarPress} size="md" testID="home.avatar" />
   </View>
 );
