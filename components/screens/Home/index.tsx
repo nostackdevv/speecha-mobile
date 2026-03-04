@@ -45,8 +45,9 @@ export const Home = () => {
             <IconButton
               accessibilityLabel="How speecha works"
               icon="question"
+              className="h-9 w-9 rounded-full"
+              iconSize={18}
               onPress={() => router.push('/how-speecha-works')}
-              size={36}
               variant="ghost"
             />
           </View>
@@ -55,7 +56,15 @@ export const Home = () => {
             <RecordingModeCard
               color="blue"
               icon="mic"
-              onPress={() => {}}
+              onPress={() =>
+                router.push({
+                  pathname: '/recording',
+                  params: {
+                    prompt: 'Tell us about yourself for 30 seconds',
+                    source: 'random',
+                  },
+                })
+              }
               title={'Random\nPractice'}
             />
             <RecordingModeCard
