@@ -2,7 +2,7 @@ export const TIERS = ['free', 'pro'] as const;
 
 export type Tier = (typeof TIERS)[number];
 
-export const MIN_RECORDING_DURATION_SECONDS = 5;
+export const MIN_RECORDING_DURATION_SECONDS = 1;
 
 export const LIMITS = {
   DAILY_RECORDINGS: {
