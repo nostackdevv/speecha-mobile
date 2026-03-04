@@ -11,6 +11,7 @@ import Close from '@/assets/icons/close.svg';
 import Crown from '@/assets/icons/crown.svg';
 import Edit from '@/assets/icons/edit.svg';
 import Fire from '@/assets/icons/fire.svg';
+import Forward from '@/assets/icons/forward.svg';
 import Home from '@/assets/icons/home.svg';
 import Loader from '@/assets/icons/loader.svg';
 import Medal from '@/assets/icons/medal.svg';
@@ -22,6 +23,8 @@ import Question from '@/assets/icons/question.svg';
 import RotateBack from '@/assets/icons/rotate-back.svg';
 import SadFace from '@/assets/icons/sad-face.svg';
 import Settings from '@/assets/icons/settings.svg';
+import Share from '@/assets/icons/share.svg';
+import Smiley from '@/assets/icons/smiley.svg';
 import Trash from '@/assets/icons/trash.svg';
 import Trophy from '@/assets/icons/trophy.svg';
 import UserProfile from '@/assets/icons/user-profile.svg';
@@ -41,6 +44,7 @@ export const ICONS = {
   crown: Crown,
   edit: Edit,
   fire: Fire,
+  forward: Forward,
   home: Home,
   loader: Loader,
   medal: Medal,
@@ -52,6 +56,8 @@ export const ICONS = {
   rotateBack: RotateBack,
   sadFace: SadFace,
   settings: Settings,
+  share: Share,
+  smiley: Smiley,
   trash: Trash,
   trophy: Trophy,
   userProfile: UserProfile,

@@ -15,7 +15,7 @@ Speech improvement app that helps users eliminate filler words through daily rec
 - expo-audio (audio recording)
 - react-native-reanimated (animations)
 - expo-haptics (tactile feedback)
-- Use expo-sqlite for persistent storage, expo-sqlite/kv-store for simple key-value storage
+- Use expo-sqlite for persistent storage
 
 ## Database Tables
 

@@ -15,8 +15,8 @@ import { PromptDisplay } from './PromptDisplay';
 import { RecordingControls } from './RecordingControls';
 import { Timer } from './Timer';
 import { TooShortSheet } from './TooShortSheet';
-// import { useAnalyzeMockRecording } from '@/hooks/useAnalyzeMockRecording';
-import { useAnalyzeRecording } from '@/hooks/useAnalyzeRecording';
+import { useAnalyzeMockRecording } from '@/hooks/useAnalyzeMockRecording';
+// import { useAnalyzeRecording } from '@/hooks/useAnalyzeRecording';
 
 export type RecordingState =
   | 'analyzing'
@@ -35,11 +35,11 @@ export const Recording = () => {
 
   const { tier } = useTier();
   const recording = useRecording({ tier });
-  // const analysis = useAnalyzeMockRecording({
-  //   shouldError: 'analyzing',
-  //   errorMessage: 'Failed to analyze speech',
-  // });
-  const analysis = useAnalyzeRecording();
+  const analysis = useAnalyzeMockRecording({
+    shouldError: 'analyzing',
+    errorMessage: 'Failed to analyze speech',
+  });
+  // const analysis = useAnalyzeRecording();
 
   const [showTooShortSheet, setShowTooShortSheet] = useState(false);
   const [showPermissionSheet, setShowPermissionSheet] = useState(false);
