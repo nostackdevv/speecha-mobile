@@ -39,7 +39,7 @@ export const ErrorView = ({ onTryAgain, testID }: ErrorViewProps) => {
           </View>
 
           <Button
-            className="h-12 w-[140px]"
+            className="h-12 w-[140px] self-center"
             onPress={onTryAgain}
             testID={testID ? `${testID}.try-again-btn` : undefined}
             title="Try again!"
