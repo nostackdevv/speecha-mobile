@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconButton } from '@/components/ui/IconButton';
 import { MIN_RECORDING_DURATION_SECONDS } from '@/constants/limits';
+import { useAnalyzeMockRecording } from '@/hooks/useAnalyzeMockRecording';
+// import { useAnalyzeRecording } from '@/hooks/useAnalyzeRecording';
 import { useRecording } from '@/hooks/useRecording';
 import { useTier } from '@/hooks/useTier';
 
@@ -15,8 +17,6 @@ import { PromptDisplay } from './PromptDisplay';
 import { RecordingControls } from './RecordingControls';
 import { Timer } from './Timer';
 import { TooShortSheet } from './TooShortSheet';
-import { useAnalyzeMockRecording } from '@/hooks/useAnalyzeMockRecording';
-// import { useAnalyzeRecording } from '@/hooks/useAnalyzeRecording';
 
 export type RecordingState =
   | 'analyzing'
@@ -36,8 +36,8 @@ export const Recording = () => {
   const { tier } = useTier();
   const recording = useRecording({ tier });
   const analysis = useAnalyzeMockRecording({
-    shouldError: 'analyzing',
-    errorMessage: 'Failed to analyze speech',
+    // shouldError: 'analyzing',
+    // errorMessage: 'Failed to analyze speech',
   });
   // const analysis = useAnalyzeRecording();
 
@@ -79,9 +79,8 @@ export const Recording = () => {
       // Edge case: recording may already be stopped (auto-stop at max duration)
       const uri = isActive ? await recording.stop() : recording.uri;
       if (uri) await submitRecording(uri);
-    } catch {
-      // Error handled reactively via analysis.error
-    }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {}
   };
 
   const handleResume = () => {
