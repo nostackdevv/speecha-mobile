@@ -8,8 +8,8 @@ import {
 } from '@/lib/api';
 import type { RecordingAnalysis } from '@/types/api';
 
-import { useAuth } from './useAuth';
-import { useCreateSpeechAnalysis } from './useSpeechAnalyses';
+// import { useAuth } from './useAuth';
+// import { useCreateSpeechAnalysis } from './useSpeechAnalyses';
 
 export type AnalysisStatus = 'idle' | 'transcribing' | 'analyzing' | 'saving';
 
@@ -29,8 +29,8 @@ const EMPTY_RESULT: RecordingAnalysis = {
 };
 
 export const useAnalyzeRecording = () => {
-  const { user } = useAuth();
-  const createAnalysis = useCreateSpeechAnalysis();
+  // const { user } = useAuth();
+  // const createAnalysis = useCreateSpeechAnalysis();
   const [status, setStatus] = useState<AnalysisStatus>('idle');
 
   const mutation = useMutation({
@@ -58,19 +58,19 @@ export const useAnalyzeRecording = () => {
         clarityScore: analysis.clarityScore,
       };
 
-      if (user?.id) {
-        setStatus('saving');
-        await createAnalysis.mutateAsync({
-          clarity_score: result.clarityScore?.score ?? 0,
-          duration_seconds: result.duration,
-          filler_count: result.fillerStats.totalFillers,
-          fillers_per_minute: result.fillerStats.fillersPerMinute,
-          transcript_data: {
-            fillers: result.fillers,
-            words: toTranscriptWords(result.words),
-          },
-        });
-      }
+      // if (user?.id) {
+      //   setStatus('saving');
+      //   await createAnalysis.mutateAsync({
+      //     clarity_score: result.clarityScore?.score ?? 0,
+      //     duration_seconds: result.duration,
+      //     filler_count: result.fillerStats.totalFillers,
+      //     fillers_per_minute: result.fillerStats.fillersPerMinute,
+      //     transcript_data: {
+      //       fillers: result.fillers,
+      //       words: toTranscriptWords(result.words),
+      //     },
+      //   });
+      // }
 
       return result;
     },
