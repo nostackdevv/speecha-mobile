@@ -30,7 +30,12 @@ export const PromptList = () => {
           {prompts.map((prompt) => (
             <PromptCard
               key={prompt.id}
-              onPress={() => router.back()}
+              onPress={() =>
+                router.push({
+                  pathname: '/recording',
+                  params: { prompt: prompt.text, source: 'prompt' },
+                })
+              }
               prompt={prompt}
             />
           ))}

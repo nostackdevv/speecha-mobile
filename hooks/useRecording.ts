@@ -149,8 +149,12 @@ export const useRecording = ({ tier = 'free' }: UseRecordingParams = {}) => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (audioRecorder.isRecording) {
-        audioRecorder.stop();
+      try {
+        if (audioRecorder.isRecording) {
+          audioRecorder.stop();
+        }
+      } catch {
+        // Native audio recorder may already be disposed during unmount
       }
     };
   }, [audioRecorder]);

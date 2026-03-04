@@ -16,7 +16,7 @@ export const ScreenHeader = ({ title }: ScreenHeaderProps) => {
         accessibilityLabel="Go back"
         icon="arrowLeft"
         onPress={() => router.back()}
-        size={48}
+        className="h-12 w-12 rounded-full"
         variant="filled"
       />
       <Text className="flex-1 text-center font-sf-rounded-semibold text-h4 text-black">

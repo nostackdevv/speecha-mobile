@@ -46,31 +46,54 @@ export default function UIShowcaseScreen() {
       <View className="flex-row gap-3">
         <IconButton
           accessibilityLabel="Back"
+          className="h-12 w-12 rounded-full"
           icon="chevronLeft"
           onPress={() => {}}
         />
         <IconButton
           accessibilityLabel="Close"
+          className="h-12 w-12 rounded-full"
           icon="close"
           onPress={() => {}}
           variant="ghost"
         />
         <IconButton
           accessibilityLabel="Upload"
+          className="h-12 w-12 rounded-full"
           icon="arrowUp"
           onPress={() => {}}
           variant="dark"
         />
         <IconButton
           accessibilityLabel="Settings"
+          className="h-12 w-12 rounded-full"
           icon="settings"
           onPress={() => {}}
         />
         <IconButton
           accessibilityLabel="Delete"
+          className="h-12 w-12 rounded-full"
           disabled
           icon="trash"
           onPress={() => {}}
+        />
+      </View>
+      <View className="mt-3 flex-row gap-3">
+        <IconButton
+          accessibilityLabel="Record"
+          className="h-16 w-32 rounded-32"
+          icon="mic"
+          iconSize={22}
+          onPress={() => {}}
+          variant="primary"
+        />
+        <IconButton
+          accessibilityLabel="Confirm"
+          className="h-16 w-32 rounded-32"
+          icon="checkmark"
+          iconSize={22}
+          onPress={() => {}}
+          variant="light"
         />
       </View>
 
