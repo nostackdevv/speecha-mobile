@@ -38,6 +38,7 @@ export const HowSpeechaWorks = () => {
         <IconButton
           accessibilityLabel="Close"
           icon="close"
+          className="h-12 w-12 rounded-full"
           onPress={router.back}
           variant="ghost"
         />

@@ -95,6 +95,7 @@ DON'T:
 - fetch data inside components,
 - store sensitive keys in code
 - use falsy `&&` for conditional rendering (`{count && <View/>}` crashes when count is 0) — always use ternary (`count ? <View/> : null`) or boolean coercion (`{!!count && <View/>}`)
+- introduce any code with eslint disable
 
 ## AI Execution Expectations
 
