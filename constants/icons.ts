@@ -25,6 +25,7 @@ import Question from '@/assets/icons/question.svg';
 import RotateBack from '@/assets/icons/rotate-back.svg';
 import RotateForward from '@/assets/icons/rotate-forward.svg';
 import SadFace from '@/assets/icons/sad-face.svg';
+import Search from '@/assets/icons/search.svg';
 import Settings from '@/assets/icons/settings.svg';
 import Share from '@/assets/icons/share.svg';
 import Smiley from '@/assets/icons/smiley.svg';
@@ -61,6 +62,7 @@ export const ICONS = {
   rotateBack: RotateBack,
   rotateForward: RotateForward,
   sadFace: SadFace,
+  search: Search,
   settings: Settings,
   share: Share,
   smiley: Smiley,

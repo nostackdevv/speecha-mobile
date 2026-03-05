@@ -48,6 +48,8 @@ export default function RootLayout() {
         <Stack.Screen name="prompt-list" options={{ headerShown: false }} />
         <Stack.Screen name="recording" options={{ headerShown: false }} />
         <Stack.Screen name="results" options={{ headerShown: false }} />
+        <Stack.Screen name="add-friend" options={{ headerShown: false }} />
+        <Stack.Screen name="friend-profile" options={{ headerShown: false }} />
         <Stack.Screen
           name="how-speecha-works"
           options={{
