@@ -217,7 +217,9 @@ export type Database = {
           avg_fillers_per_minute: number;
           current_streak: number;
           last_practiced: string;
+          top_filler_word: string | null;
           total_analyses: number;
+          total_words: number;
         }[];
       };
       search_profile_by_email: {

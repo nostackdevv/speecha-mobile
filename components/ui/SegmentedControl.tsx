@@ -9,23 +9,25 @@ import Animated, {
 
 import { cn } from '@/lib/cn';
 
-interface SegmentedControlProps {
+interface SegmentedControlProps<T extends string> {
+  badges?: Partial<Record<T, number>>;
   className?: string;
-  onValueChange: (value: string) => void;
-  segments: string[];
-  selectedValue: string;
+  onValueChange: (value: T) => void;
+  segments: readonly T[];
+  selectedValue: T;
   testID?: string;
 }
 
 const PADDING_INSET = 8;
 
-export const SegmentedControl = ({
+export const SegmentedControl = <T extends string>({
+  badges,
   className,
   onValueChange,
   segments,
   selectedValue,
   testID,
-}: SegmentedControlProps) => {
+}: SegmentedControlProps<T>) => {
   const selectedIndex = segments.indexOf(selectedValue);
   const [containerWidth, setContainerWidth] = useState(0);
   const translateX = useSharedValue(0);
@@ -45,7 +47,7 @@ export const SegmentedControl = ({
     width: itemWidth,
   }));
 
-  const handlePress = (segment: string) => {
+  const handlePress = (segment: T) => {
     if (segment !== selectedValue) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -55,7 +57,7 @@ export const SegmentedControl = ({
   return (
     <View
       accessibilityRole="tablist"
-      className={cn('h-12 flex-row rounded-32 bg-grey-100 p-1', className)}
+      className={cn('h-12 flex-row rounded-32 bg-grey-50 p-1', className)}
       testID={testID}
       onLayout={(e) => {
         setContainerWidth(e.nativeEvent.layout.width - PADDING_INSET);
@@ -82,14 +84,36 @@ export const SegmentedControl = ({
               : undefined
           }
         >
-          <Text
-            className={cn(
-              'font-sf-rounded-semibold text-body-sm',
-              segment === selectedValue ? 'text-white' : 'text-grey-500'
-            )}
-          >
-            {segment}
-          </Text>
+          <View className="flex-row items-center gap-1.5">
+            <Text
+              className={cn(
+                'font-sf-rounded-semibold text-body-lg',
+                segment === selectedValue ? 'text-white' : 'text-grey-500'
+              )}
+            >
+              {segment}
+            </Text>
+            {/* TODO: should this be a component */}
+            {badges?.[segment] ? (
+              <View
+                className={cn(
+                  'h-6 min-w-6 items-center justify-center rounded-full px-1.5',
+                  segment === selectedValue
+                    ? 'bg-clarity-blue-00'
+                    : 'bg-grey-200'
+                )}
+              >
+                <Text
+                  className={cn(
+                    'font-sf-rounded-semibold text-body-xs',
+                    segment === selectedValue ? 'text-white' : 'text-grey-500'
+                  )}
+                >
+                  {badges[segment]}
+                </Text>
+              </View>
+            ) : null}
+          </View>
         </Pressable>
       ))}
     </View>

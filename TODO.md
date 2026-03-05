@@ -7,6 +7,8 @@
 - review all pressable opacity
 - review all accessibility
 - add `border-curve-continuous` Tailwind utility to replace inline `style={{ borderCurve: 'continuous' }}`
+- SegmentedControls should not be using fixed height h-12. It should determine it's height based on it's children
+- create a ui component for statcard to be generic
 
 Code Review
 

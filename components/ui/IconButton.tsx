@@ -20,7 +20,7 @@ const VARIANT_CLASSES: Record<IconButtonVariant, string> = {
 
 const ICON_COLORS: Record<IconButtonVariant, string> = {
   dark: COLORS.white,
-  filled: COLORS.black,
+  filled: COLORS.grey[700],
   ghost: COLORS.black,
   light: COLORS.black,
   primary: COLORS.white,

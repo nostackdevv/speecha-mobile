@@ -107,6 +107,7 @@ module.exports = {
         h1: ['48px', { lineHeight: '57.6px', letterSpacing: '-0.48px' }],
       },
       borderRadius: {
+        16: '16px',
         20: '20px',
         24: '24px',
         32: '32px',

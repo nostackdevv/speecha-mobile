@@ -18,7 +18,7 @@ interface ButtonProps {
   onPress: () => void;
   testID?: string;
   title: string;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'destructive';
 }
 
 export const Button = ({
@@ -33,11 +33,16 @@ export const Button = ({
   title,
   variant = 'primary',
 }: ButtonProps) => {
-  const isPrimary = variant === 'primary';
+  const isDestructive = variant === 'destructive';
+  const isSecondary = variant === 'secondary';
 
   const handlePress = () => {
     if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      Haptics.impactAsync(
+        isDestructive
+          ? Haptics.ImpactFeedbackStyle.Heavy
+          : Haptics.ImpactFeedbackStyle.Light
+      );
     }
     onPress();
   };
@@ -49,7 +54,9 @@ export const Button = ({
       testID={testID}
       className={cn(
         'h-14 flex-row items-center justify-center rounded-32 px-7',
-        isPrimary ? 'bg-clarity-blue' : 'bg-grey-100',
+        isSecondary && 'bg-grey-100',
+        isDestructive && 'bg-error-500',
+        !isSecondary && !isDestructive && 'bg-clarity-blue',
         fullWidth ? 'w-full' : 'self-start',
         className
       )}
@@ -63,7 +70,7 @@ export const Button = ({
       <View className="flex-row items-center gap-2">
         {icon && (
           <Icon
-            color={isPrimary ? COLORS.white : COLORS.grey[700]}
+            color={isSecondary ? COLORS.grey[700] : COLORS.white}
             name={icon}
             size={20}
           />
@@ -71,7 +78,7 @@ export const Button = ({
         <Text
           className={cn(
             'font-sf-rounded-semibold text-body-xl',
-            isPrimary ? 'text-white' : 'text-grey-700'
+            isSecondary ? 'text-grey-700' : 'text-white'
           )}
         >
           {title}
