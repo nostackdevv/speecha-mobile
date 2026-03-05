@@ -6,7 +6,7 @@ Ignore anything about the recording logic for now. I do not need it to work. Wha
 ## Your Task
 
 Implement the UI from the provided Figma design, then verify it visually against a simulator screenshot.
-Figma design: https://www.figma.com/design/HhdvmYhAeC40bTBDsPZkMP/SPEECHA?node-id=6425-1671&t=5Wmh9Oxyxvn2YmLT-0
+Figma design: https://www.figma.com/design/HhdvmYhAeC40bTBDsPZkMP/SPEECHA?node-id=6589-1841&t=r0XYSUg0jWG45D6X-0
 
 ## Very Important
 

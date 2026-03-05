@@ -4,13 +4,17 @@ import ArrowUp from '@/assets/icons/arrow-up.svg';
 import ArrowUpRight from '@/assets/icons/arrow-up-right.svg';
 import Bolt from '@/assets/icons/bolt.svg';
 import Bulb from '@/assets/icons/bulb.svg';
+import Calendar from '@/assets/icons/calendar.svg';
 import Chart from '@/assets/icons/chart.svg';
 import Check from '@/assets/icons/check.svg';
 import Checkmark from '@/assets/icons/checkmark.svg';
 import ChevronLeft from '@/assets/icons/chevron-left.svg';
+import Clock from '@/assets/icons/clock.svg';
 import Close from '@/assets/icons/close.svg';
 import Copy from '@/assets/icons/copy.svg';
 import Crown from '@/assets/icons/crown.svg';
+import Delete from '@/assets/icons/delete.svg';
+import DeleteHalfOpen from '@/assets/icons/delete-half-open.svg';
 import Edit from '@/assets/icons/edit.svg';
 import Fire from '@/assets/icons/fire.svg';
 import Forward from '@/assets/icons/forward.svg';
@@ -41,13 +45,17 @@ export const ICONS = {
   arrowUpRight: ArrowUpRight,
   bolt: Bolt,
   bulb: Bulb,
+  calendar: Calendar,
   chart: Chart,
   check: Check,
   checkmark: Checkmark,
   chevronLeft: ChevronLeft,
+  clock: Clock,
   close: Close,
   copy: Copy,
   crown: Crown,
+  delete: Delete,
+  deleteHalfOpen: DeleteHalfOpen,
   edit: Edit,
   fire: Fire,
   forward: Forward,
