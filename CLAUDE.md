@@ -87,8 +87,6 @@ Always run `npm run verify` after making changes.
 DO:
 
 - Use TypeScript,
-- IMPORTANT: use `/building-native-ui` skills for code development with claude
-- Use `/claude-md-management:revise-claude-md` skill to suggest improvement in every plan mode and updates
 - React Query for data fetching,
 - keep comments as minimal as possible only when necessary
 
