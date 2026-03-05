@@ -1,10 +1,11 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
+import { IconButton } from '@/components/ui/IconButton';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { MOCK_FRIEND_REQUESTS } from '@/constants/mockFriends';
-
-import { FriendsHeader } from './FriendsHeader';
 import { FriendsList } from './FriendsList';
 import { RequestsList } from './RequestsList';
 
@@ -12,6 +13,7 @@ const SEGMENTS = ['Friends', 'Requests'] as const;
 type Tab = (typeof SEGMENTS)[number];
 
 export const Friends = () => {
+  const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<Tab>('Friends');
 
   const requestBadges =
@@ -27,7 +29,22 @@ export const Friends = () => {
       testID="friends.screen"
     >
       <View className="gap-6">
-        <FriendsHeader />
+        <ScreenHeader
+          left={null}
+          right={
+            <IconButton
+              accessibilityLabel="Add friend"
+              className="size-12 rounded-full"
+              icon="addFriend"
+              onPress={() => router.push('/add-friend')}
+              testID="friends.add-friend-btn"
+              variant="filled"
+            />
+          }
+          testID="friends.header"
+          title="Friends"
+          titlePlacement="left"
+        />
         <SegmentedControl
           badges={requestBadges}
           onValueChange={setSelectedTab}

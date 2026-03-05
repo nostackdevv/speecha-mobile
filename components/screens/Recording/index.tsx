@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconButton } from '@/components/ui/IconButton';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MIN_RECORDING_DURATION_SECONDS } from '@/constants/limits';
 import { useAnalyzeMockRecording } from '@/hooks/useAnalyzeMockRecording';
 // import { useAnalyzeRecording } from '@/hooks/useAnalyzeRecording';
@@ -113,16 +114,20 @@ export const Recording = () => {
       style={{ paddingTop: insets.top }}
       testID="recording.screen"
     >
-      <View className="flex-row justify-end py-4">
-        <IconButton
-          accessibilityLabel="Close"
-          className="size-12 rounded-32 border border-white/50 bg-white/20"
-          icon="close"
-          onPress={handleClose}
-          testID="recording.close"
-          variant="ghost"
-        />
-      </View>
+      <ScreenHeader
+        className="py-4"
+        left={null}
+        right={
+          <IconButton
+            accessibilityLabel="Close"
+            className="size-12 rounded-32 border border-white/50 bg-white/20"
+            icon="close"
+            onPress={handleClose}
+            testID="recording.close"
+            variant="ghost"
+          />
+        }
+      />
 
       <View
         className="flex-1 justify-between"

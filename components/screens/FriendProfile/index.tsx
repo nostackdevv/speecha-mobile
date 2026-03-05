@@ -4,7 +4,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Icon } from '@/components/ui/Icon';
-import { IconButton } from '@/components/ui/IconButton';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { COLORS } from '@/constants/colors';
 import { MOCK_FRIENDS, MOCK_FRIEND_STATS } from '@/constants/mockFriends';
@@ -32,16 +32,7 @@ export const FriendProfile = () => {
       testID="friend-profile.screen" // TODO: Should we set the inset stuff?
     >
       <View className="gap-6">
-        <View className="flex-row items-center">
-          <IconButton
-            accessibilityLabel="Go back"
-            className="h-12 w-12 rounded-full"
-            icon="arrowLeft"
-            onPress={() => router.back()}
-            testID="friend-profile.back-btn"
-            variant="filled"
-          />
-        </View>
+        <ScreenHeader testID="friend-profile" />
 
         <View className="items-center gap-3">
           <Avatar size="lg" />
