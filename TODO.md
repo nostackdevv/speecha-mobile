@@ -11,6 +11,8 @@
 - create a ui component for statcard to be generic
 
 Optimization
+-- IMPORTANT
+-> Removing if (user?.id) checks, user must always be auth
 RECORDING SCREEN
 
 - Recording fetches profiles on mount (that seems unnecessary). Just to get recording tiers

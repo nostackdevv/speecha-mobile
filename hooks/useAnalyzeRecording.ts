@@ -9,7 +9,6 @@ import {
 import { audioRecordingStorage } from '@/lib/audioRecordingStorage';
 import type { RecordingAnalysis } from '@/types/api';
 
-import { useAuth } from './useAuth';
 import { useCreateSpeechAnalysis } from './useSpeechAnalyses';
 
 export type AnalysisStatus = 'idle' | 'transcribing' | 'analyzing' | 'saving';
@@ -40,7 +39,6 @@ const EMPTY_RESULT: RecordingAnalysis = {
 };
 
 export const useAnalyzeRecording = () => {
-  const { user } = useAuth();
   const createAnalysis = useCreateSpeechAnalysis();
   const [status, setStatus] = useState<AnalysisStatus>('idle');
 
@@ -74,31 +72,26 @@ export const useAnalyzeRecording = () => {
         };
       }
 
-      let analysisId = '';
+      setStatus('saving');
+      const saved = await createAnalysis.mutateAsync({
+        clarity_score: Math.round(result.clarityScore?.score ?? 0),
+        duration_seconds: Math.max(1, Math.round(result.duration)),
+        filler_count: result.fillerStats.totalFillers,
+        fillers_per_minute: Math.max(0, result.fillerStats.fillersPerMinute),
+        prompt_id: promptId ?? null,
+        transcript_data: {
+          fillers: result.fillers,
+          words: result.words,
+        },
+      });
 
-      if (user?.id) {
-        setStatus('saving');
-        const saved = await createAnalysis.mutateAsync({
-          clarity_score: Math.round(result.clarityScore?.score ?? 0),
-          duration_seconds: Math.max(1, Math.round(result.duration)),
-          filler_count: result.fillerStats.totalFillers,
-          fillers_per_minute: Math.max(0, result.fillerStats.fillersPerMinute),
-          prompt_id: promptId ?? null,
-          transcript_data: {
-            fillers: result.fillers,
-            words: result.words,
-          },
-        });
-        analysisId = saved.id;
-
-        try {
-          audioRecordingStorage.save(analysisId, uri);
-        } catch {
-          // console.error('Failed to persist audio file:', error);
-        }
+      try {
+        audioRecordingStorage.save(saved.id, uri);
+      } catch {
+        // silent fail for audio persistence
       }
 
-      return { analysis: result, analysisId };
+      return { analysis: result, analysisId: saved.id };
     },
     onSettled: () => {
       setStatus('idle');
