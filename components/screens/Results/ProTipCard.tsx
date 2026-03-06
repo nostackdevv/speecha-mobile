@@ -8,7 +8,7 @@ const getTipText = (topFiller?: string): string => {
   if (!topFiller) {
     return 'Great job! Keep practicing daily to maintain your speaking clarity.';
   }
-  return `Try pausing to articulate your thought instead "${topFiller}". A brief pause sounds more confident.`;
+  return `Try pausing to articulate your thought instead of using "${topFiller}". A brief pause makes you sound more confident.`;
 };
 
 interface ProTipCardProps {

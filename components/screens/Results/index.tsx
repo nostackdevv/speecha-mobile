@@ -1,10 +1,11 @@
-import { useRouter } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
 import { IconButton } from '@/components/ui/IconButton';
-import { MOCK_ANALYSIS_RESULT } from '@/constants/mockData';
+import { useSpeechAnalysisDetail } from '@/hooks/useSpeechAnalyses';
+import { transformAnalysis } from '@/lib/transformAnalysis';
 
 import { ArchetypeBadge } from './ArchetypeBadge';
 import { AudioPlayer } from './AudioPlayer';
@@ -17,7 +18,9 @@ import { StatsRow } from './StatsRow';
 export const Results = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const data = MOCK_ANALYSIS_RESULT;
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { data: dbRow, isLoading, error } = useSpeechAnalysisDetail(id);
+  const data = dbRow ? transformAnalysis(dbRow) : null;
 
   const handleDone = () => {
     router.replace('/');
@@ -26,6 +29,36 @@ export const Results = () => {
   const handleTryAgain = () => {
     router.replace('/');
   };
+
+  if (isLoading) {
+    return (
+      <View
+        className="flex-1 items-center justify-center bg-white"
+        style={{ paddingTop: insets.top }}
+        testID="results.loading"
+      >
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <View
+        className="flex-1 items-center justify-center gap-4 bg-white px-6"
+        style={{ paddingTop: insets.top }}
+        testID="results.error"
+      >
+        <Text className="font-sf-rounded-semibold text-body-lg text-black">
+          Something went wrong
+        </Text>
+        <Text className="text-center font-sf-rounded-medium text-body-md text-grey-500">
+          We could not load your results. Please try again.
+        </Text>
+        <Button onPress={handleDone} testID="results.go-home" title="Go Home" />
+      </View>
+    );
+  }
 
   const score = data.clarityScore?.score ?? 0;
   const hasFillers = data.fillerStats.totalFillers > 0;

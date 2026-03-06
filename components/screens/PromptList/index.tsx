@@ -34,7 +34,7 @@ export const PromptList = () => {
               onPress={() =>
                 router.push({
                   pathname: '/recording',
-                  params: { prompt: prompt.text, source: 'prompt' },
+                  params: { promptId: prompt.id },
                 })
               }
               prompt={prompt}

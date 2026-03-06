@@ -1,12 +1,11 @@
 import { LIMITS, Tier } from '@/constants/limits';
 
-// import { useProfile } from './useProfile';
+import { useProfile } from './useProfile';
 
 export const useTier = () => {
-  // const { data: profile } = useProfile();
+  const { data: profile } = useProfile();
 
-  // const tier: Tier = profile?.pricing_plan ?? 'free';
-  const tier: Tier = 'free'; // use dummy tier for now
+  const tier: Tier = profile?.pricing_plan ?? 'free';
 
   return {
     tier,

@@ -63,7 +63,6 @@ export const PROMPT_CATEGORIES: PromptCategory[] = [
   //   promptCount: 10,
   // },
 ];
-/* eslint-enable @typescript-eslint/no-require-imports */
 
 export const PROMPTS: Record<PromptCategoryId, Prompt[]> = {
   interview: [
@@ -151,3 +150,12 @@ export const PROMPTS: Record<PromptCategoryId, Prompt[]> = {
     { id: 'random-10', text: 'What advice would you give your younger self?' },
   ],
 };
+
+const PROMPTS_BY_ID = new Map<string, Prompt>();
+// Populate flat lookup map
+Object.values(PROMPTS)
+  .flat()
+  .forEach((prompt) => PROMPTS_BY_ID.set(prompt.id, prompt));
+
+export const getPromptById = (id: string): Prompt | undefined =>
+  PROMPTS_BY_ID.get(id);
