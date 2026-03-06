@@ -58,15 +58,7 @@ export const Home = () => {
             <RecordingModeCard
               color="blue"
               icon="mic"
-              onPress={() =>
-                router.push({
-                  pathname: '/recording',
-                  params: {
-                    prompt: 'Tell us about yourself for 30 seconds',
-                    source: 'random',
-                  },
-                })
-              }
+              onPress={() => router.push('/recording')}
               testID="home.record-random"
               title={'Random\nPractice'}
             />

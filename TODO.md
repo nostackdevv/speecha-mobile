@@ -10,6 +10,17 @@
 - SegmentedControls should not be using fixed height h-12. It should determine it's height based on it's children
 - create a ui component for statcard to be generic
 
+Optimization
+RECORDING SCREEN
+
+- Recording fetches profiles on mount (that seems unnecessary). Just to get recording tiers
+
+RESULTS SCREEN
+
+- There should be no need for isLoading or error views
+- Results screen makes an extra get https://kulqrquoytougvtuheso.supabase.co/rest/v1/speech_analyses?select=*&id=eq.c7eb4266-0c06-4f5e-8551-57754b4c59fd to supabase to fetch results after recording
+- - Eliminate redundant Supabase fetch on Results screen after recording. In `useCreateSpeechAnalysis` `onSuccess`, seed the detail cache: `queryClient.setQueryData(['speech-analysis-detail', data.id], data)`. Results screen will use cached data for fresh recordings, still fetch normally for past sessions from Progress.
+
 Code Review
 
 - Ignore dummy data
@@ -19,3 +30,7 @@ Code Review
 Marketing
 
 - Feedback shows immediately after first result in onboarding
+
+Backend
+
+- Recording page loads

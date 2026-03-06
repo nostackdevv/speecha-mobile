@@ -1,10 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Redirect, Stack, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
+
+import { AuthProvider } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 
 const queryClient = new QueryClient();
 
@@ -14,6 +17,47 @@ export {
 } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
+
+const RootNavigator = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const segments = useSegments();
+
+  if (isLoading) return null;
+
+  const onSignIn = segments[0] === 'sign-in';
+
+  if (!isAuthenticated && !onSignIn) {
+    return <Redirect href="/sign-in" />;
+  }
+
+  if (isAuthenticated && onSignIn) {
+    return <Redirect href="/" />;
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+      <Stack.Screen name="dev" options={{ headerShown: false }} />
+      <Stack.Screen name="prompt-categories" options={{ headerShown: false }} />
+      <Stack.Screen name="prompt-list" options={{ headerShown: false }} />
+      <Stack.Screen name="recording" options={{ headerShown: false }} />
+      <Stack.Screen name="results" options={{ headerShown: false }} />
+      <Stack.Screen name="all-sessions" options={{ headerShown: false }} />
+      <Stack.Screen name="calendar" options={{ headerShown: false }} />
+      <Stack.Screen name="add-friend" options={{ headerShown: false }} />
+      <Stack.Screen name="friend-profile" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="how-speecha-works"
+        options={{
+          headerShown: false,
+          presentation: 'formSheet',
+          sheetAllowedDetents: 'fitToContents',
+        }}
+      />
+    </Stack>
+  );
+};
 
 export default function RootLayout() {
   /* eslint-disable @typescript-eslint/no-require-imports */
@@ -38,29 +82,9 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="dev" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="prompt-categories"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="prompt-list" options={{ headerShown: false }} />
-        <Stack.Screen name="recording" options={{ headerShown: false }} />
-        <Stack.Screen name="results" options={{ headerShown: false }} />
-        <Stack.Screen name="all-sessions" options={{ headerShown: false }} />
-        <Stack.Screen name="calendar" options={{ headerShown: false }} />
-        <Stack.Screen name="add-friend" options={{ headerShown: false }} />
-        <Stack.Screen name="friend-profile" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="how-speecha-works"
-          options={{
-            headerShown: false,
-            presentation: 'formSheet',
-            sheetAllowedDetents: 'fitToContents',
-          }}
-        />
-      </Stack>
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

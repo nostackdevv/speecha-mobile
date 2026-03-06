@@ -6,12 +6,23 @@ import {
   toTranscriptWords,
   transcribeAudio,
 } from '@/lib/api';
+import { audioRecordingStorage } from '@/lib/audioRecordingStorage';
 import type { RecordingAnalysis } from '@/types/api';
 
-// import { useAuth } from './useAuth';
-// import { useCreateSpeechAnalysis } from './useSpeechAnalyses';
+import { useAuth } from './useAuth';
+import { useCreateSpeechAnalysis } from './useSpeechAnalyses';
 
 export type AnalysisStatus = 'idle' | 'transcribing' | 'analyzing' | 'saving';
+
+type AnalyzeInput = {
+  promptId?: string;
+  uri: string;
+};
+
+type AnalyzeResult = {
+  analysis: RecordingAnalysis;
+  analysisId: string;
+};
 
 const EMPTY_RESULT: RecordingAnalysis = {
   transcript: '',
@@ -29,65 +40,78 @@ const EMPTY_RESULT: RecordingAnalysis = {
 };
 
 export const useAnalyzeRecording = () => {
-  // const { user } = useAuth();
-  // const createAnalysis = useCreateSpeechAnalysis();
+  const { user } = useAuth();
+  const createAnalysis = useCreateSpeechAnalysis();
   const [status, setStatus] = useState<AnalysisStatus>('idle');
 
   const mutation = useMutation({
-    mutationFn: async (uri: string): Promise<RecordingAnalysis> => {
+    mutationFn: async ({
+      uri,
+      promptId,
+    }: AnalyzeInput): Promise<AnalyzeResult> => {
       setStatus('transcribing');
       const transcription = await transcribeAudio(uri);
 
+      let result: RecordingAnalysis;
+
       if (!transcription.transcript) {
-        return { ...EMPTY_RESULT, duration: transcription.duration };
+        result = { ...EMPTY_RESULT, duration: transcription.duration };
+      } else {
+        setStatus('analyzing');
+        const analysis = await analyzeTranscript({
+          transcript: transcription.transcript,
+          words: toTranscriptWords(transcription.words),
+          duration: transcription.duration,
+        });
+
+        result = {
+          transcript: transcription.transcript,
+          words: transcription.words,
+          duration: transcription.duration,
+          fillers: analysis.fillers,
+          fillerStats: analysis.fillerStats,
+          clarityScore: analysis.clarityScore,
+        };
       }
 
-      setStatus('analyzing');
-      const analysis = await analyzeTranscript({
-        transcript: transcription.transcript,
-        words: toTranscriptWords(transcription.words),
-        duration: transcription.duration,
-      });
+      let analysisId = '';
 
-      const result: RecordingAnalysis = {
-        transcript: transcription.transcript,
-        words: transcription.words,
-        duration: transcription.duration,
-        fillers: analysis.fillers,
-        fillerStats: analysis.fillerStats,
-        clarityScore: analysis.clarityScore,
-      };
+      if (user?.id) {
+        setStatus('saving');
+        const saved = await createAnalysis.mutateAsync({
+          clarity_score: Math.round(result.clarityScore?.score ?? 0),
+          duration_seconds: Math.max(1, Math.round(result.duration)),
+          filler_count: result.fillerStats.totalFillers,
+          fillers_per_minute: Math.max(0, result.fillerStats.fillersPerMinute),
+          prompt_id: promptId ?? null,
+          transcript_data: {
+            fillers: result.fillers,
+            words: result.words,
+          },
+        });
+        analysisId = saved.id;
 
-      // if (user?.id) {
-      //   setStatus('saving');
-      //   await createAnalysis.mutateAsync({
-      //     clarity_score: result.clarityScore?.score ?? 0,
-      //     duration_seconds: result.duration,
-      //     filler_count: result.fillerStats.totalFillers,
-      //     fillers_per_minute: result.fillerStats.fillersPerMinute,
-      //     transcript_data: {
-      //       fillers: result.fillers,
-      //       words: toTranscriptWords(result.words),
-      //     },
-      //   });
-      // }
+        try {
+          audioRecordingStorage.save(analysisId, uri);
+        } catch {
+          // console.error('Failed to persist audio file:', error);
+        }
+      }
 
-      return result;
+      return { analysis: result, analysisId };
     },
     onSettled: () => {
       setStatus('idle');
     },
   });
 
-  // Fire-and-forget: read results reactively via data/error/isPending
   const analyze = useCallback(
-    (uri: string) => mutation.mutate(uri),
+    (input: AnalyzeInput) => mutation.mutate(input),
     [mutation]
   );
 
-  // Awaitable: use when you need the result before proceeding (e.g. navigating to results screen)
   const analyzeAsync = useCallback(
-    (uri: string) => mutation.mutateAsync(uri),
+    (input: AnalyzeInput) => mutation.mutateAsync(input),
     [mutation]
   );
 

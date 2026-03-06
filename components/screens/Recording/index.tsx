@@ -6,8 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton } from '@/components/ui/IconButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MIN_RECORDING_DURATION_SECONDS } from '@/constants/limits';
-import { useAnalyzeMockRecording } from '@/hooks/useAnalyzeMockRecording';
-// import { useAnalyzeRecording } from '@/hooks/useAnalyzeRecording';
+import { getPromptById } from '@/constants/prompts';
+import { useAnalyzeRecording } from '@/hooks/useAnalyzeRecording';
+// import { useAnalyzeMockRecording } from '@/hooks/useAnalyzeMockRecording';
 import { useRecording } from '@/hooks/useRecording';
 import { useTier } from '@/hooks/useTier';
 
@@ -30,17 +31,20 @@ export type RecordingState =
 export const Recording = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { prompt = 'Say something random' } = useLocalSearchParams<{
-    prompt?: string;
+  const { promptId } = useLocalSearchParams<{
+    promptId?: string;
   }>();
+  const promptText = promptId
+    ? (getPromptById(promptId)?.text ?? 'Say something random')
+    : 'Say something random';
 
   const { tier } = useTier();
   const recording = useRecording({ tier });
-  const analysis = useAnalyzeMockRecording({
-    // shouldError: 'analyzing',
-    // errorMessage: 'Failed to analyze speech',
-  });
-  // const analysis = useAnalyzeRecording();
+  //   const analysis = useAnalyzeMockRecording({
+  //   // shouldError: 'analyzing',
+  //   // errorMessage: 'Failed to analyze speech',
+  // });
+  const analysis = useAnalyzeRecording();
 
   const [showTooShortSheet, setShowTooShortSheet] = useState(false);
   const [showPermissionSheet, setShowPermissionSheet] = useState(false);
@@ -65,8 +69,8 @@ export const Recording = () => {
     recording.status === 'recording' || recording.status === 'paused';
 
   const submitRecording = async (uri: string) => {
-    await analysis.analyzeAsync(uri);
-    router.replace('/results');
+    const { analysisId } = await analysis.analyzeAsync({ uri, promptId });
+    router.replace({ pathname: '/results', params: { id: analysisId } });
   };
 
   const handleSubmitRecording = async () => {
@@ -134,7 +138,7 @@ export const Recording = () => {
         style={{ paddingBottom: insets.bottom + 16 }}
       >
         <View className="pt-4">
-          <PromptDisplay testID="recording.prompt" text={prompt} />
+          <PromptDisplay testID="recording.prompt" text={promptText} />
         </View>
 
         <View className="items-center">
