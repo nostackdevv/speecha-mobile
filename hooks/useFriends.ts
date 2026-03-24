@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type {
   FriendProfile,
+  FriendRequest,
   FriendStats,
-  Friendship,
   SearchedProfile,
 } from '@/types/database';
 
@@ -28,16 +28,10 @@ export const useFriendList = () => {
 export const useFriendRequests = () => {
   const { user } = useAuth();
 
-  return useQuery<Friendship[]>({
+  return useQuery<FriendRequest[]>({
     queryKey: ['friend-requests', user?.id],
     queryFn: async () => {
-      if (!user?.id) throw new Error('User ID is required');
-
-      const { data, error } = await supabase
-        .from('friendships')
-        .select('*')
-        .eq('receiver_id', user.id)
-        .eq('status', 'pending');
+      const { data, error } = await supabase.rpc('get_friend_requests');
 
       if (error) throw error;
       return data;

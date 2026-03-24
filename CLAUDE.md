@@ -49,6 +49,7 @@ Always run `npm run verify` after making changes.
 - Styling: NativeWind only, no StyleSheet.create(). Use standard Tailwind classes that maps to the design (px-3, gap-2, h-14) — only use arbitrary values like px-[29px] when no standard utility exists.
 - Styling helpers: Use `cn()` from `lib/cn.ts` (clsx + tailwind-merge) for conditional/merged classNames — never raw template strings
 - Functions: Arrow functions everywhere (components, hooks, utils, callbacks)
+- Event handlers: One-liner callbacks can be inline (`onPress={() => setVisible(true)}`), but multi-line callbacks should be extracted to named functions (`handleSubmit`, `handleRemove`)
 - iOS cards: Use `style={{ borderCurve: 'continuous' }}` on rounded containers for smooth iOS corners
 - testID naming: `{screen}.{element}` format (e.g., `home.record-random`, `recording.submit-btn`, `friends.screen`). All interactive UI primitives (Button, IconButton, Avatar, SegmentedControl, BottomSheet) accept an optional `testID` prop. Always add `testID` to new interactive elements and screen root views for Expo MCP automation.
 
@@ -94,8 +95,9 @@ DON'T:
 
 - fetch data inside components,
 - store sensitive keys in code
-- use falsy `&&` for conditional rendering (`{count && <View/>}` crashes when count is 0) — always use ternary (`count ? <View/> : null`) or boolean coercion (`{!!count && <View/>}`)
 - introduce any code with eslint disable
+- remove TODO comments unless the action described was actually completed
+- delete mock files (e.g., `mockFriends.ts`, `mockData.ts`) without explicit user approval
 
 ## AI Execution Expectations
 

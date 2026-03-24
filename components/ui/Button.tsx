@@ -16,6 +16,7 @@ interface ButtonProps {
   haptic?: boolean;
   icon?: IconName;
   onPress: () => void;
+  size?: 'sm' | 'md';
   testID?: string;
   title: string;
   variant?: 'primary' | 'secondary' | 'destructive';
@@ -29,10 +30,12 @@ export const Button = ({
   haptic = true,
   icon,
   onPress,
+  size = 'md',
   testID,
   title,
   variant = 'primary',
 }: ButtonProps) => {
+  const isSmall = size === 'sm';
   const isDestructive = variant === 'destructive';
   const isSecondary = variant === 'secondary';
 
@@ -53,7 +56,8 @@ export const Button = ({
       accessibilityRole="button"
       testID={testID}
       className={cn(
-        'h-14 flex-row items-center justify-center rounded-32 px-7',
+        'flex-row items-center justify-center rounded-32',
+        isSmall ? 'h-8 px-4' : 'h-14 px-7',
         isSecondary && 'bg-grey-100',
         isDestructive && 'bg-error-500',
         !isSecondary && !isDestructive && 'bg-clarity-blue',
@@ -77,7 +81,9 @@ export const Button = ({
         )}
         <Text
           className={cn(
-            'font-sf-rounded-semibold text-body-xl',
+            isSmall
+              ? 'font-sf-rounded-medium text-body-sm'
+              : 'font-sf-rounded-semibold text-body-xl',
             isSecondary ? 'text-grey-700' : 'text-white'
           )}
         >

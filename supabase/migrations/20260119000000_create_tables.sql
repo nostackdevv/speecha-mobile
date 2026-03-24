@@ -107,7 +107,8 @@ RETURNS TABLE (
   full_name TEXT,
   avatar_url TEXT,
   current_streak INT,
-  longest_streak INT
+  longest_streak INT,
+  sessions_count INT
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -115,7 +116,8 @@ SET search_path = public
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT p.id, p.username, p.full_name, p.avatar_url, p.current_streak, p.longest_streak
+  SELECT p.id, p.username, p.full_name, p.avatar_url, p.current_streak, p.longest_streak,
+         (SELECT COUNT(*) FROM speech_analyses sa WHERE sa.profile_id = p.id)::INT AS sessions_count
   FROM profiles p
   WHERE EXISTS (
     SELECT 1 FROM friendships f
@@ -212,7 +214,8 @@ RETURNS TABLE (
   id UUID,
   username TEXT,
   full_name TEXT,
-  avatar_url TEXT
+  avatar_url TEXT,
+  friendship_status TEXT
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -220,9 +223,21 @@ SET search_path = public
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT p.id, p.username, p.full_name, p.avatar_url
+  SELECT p.id, p.username, p.full_name, p.avatar_url,
+         CASE
+           WHEN f.id IS NULL THEN 'none'
+           WHEN f.status = 'accepted' THEN 'accepted'
+           WHEN f.status = 'pending' AND f.sender_id = auth.uid() THEN 'pending_sent'
+           WHEN f.status = 'pending' AND f.receiver_id = auth.uid() THEN 'pending_received'
+           ELSE 'none'
+         END AS friendship_status
   FROM profiles p
+  LEFT JOIN friendships f ON (
+    (f.sender_id = auth.uid() AND f.receiver_id = p.id)
+    OR (f.receiver_id = auth.uid() AND f.sender_id = p.id)
+  )
   WHERE p.email = search_email
+    AND p.id != auth.uid()
   LIMIT 1;
 END;
 $$;
@@ -233,7 +248,8 @@ RETURNS TABLE (
   id UUID,
   username TEXT,
   full_name TEXT,
-  avatar_url TEXT
+  avatar_url TEXT,
+  friendship_status TEXT
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -241,10 +257,49 @@ SET search_path = public
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT p.id, p.username, p.full_name, p.avatar_url
+  SELECT p.id, p.username, p.full_name, p.avatar_url,
+         CASE
+           WHEN f.id IS NULL THEN 'none'
+           WHEN f.status = 'accepted' THEN 'accepted'
+           WHEN f.status = 'pending' AND f.sender_id = auth.uid() THEN 'pending_sent'
+           WHEN f.status = 'pending' AND f.receiver_id = auth.uid() THEN 'pending_received'
+           ELSE 'none'
+         END AS friendship_status
   FROM profiles p
+  LEFT JOIN friendships f ON (
+    (f.sender_id = auth.uid() AND f.receiver_id = p.id)
+    OR (f.receiver_id = auth.uid() AND f.sender_id = p.id)
+  )
   WHERE p.username ILIKE '%' || search_username || '%'
+    AND p.id != auth.uid()
   LIMIT 20;
+END;
+$$;
+
+-- Get pending friend requests with sender profile
+CREATE OR REPLACE FUNCTION get_friend_requests()
+RETURNS TABLE (
+  id UUID,
+  sender_id UUID,
+  created_at TIMESTAMPTZ,
+  username TEXT,
+  full_name TEXT,
+  avatar_url TEXT,
+  current_streak INT
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT f.id, f.sender_id, f.created_at,
+         p.username, p.full_name, p.avatar_url, p.current_streak
+  FROM friendships f
+  JOIN profiles p ON p.id = f.sender_id
+  WHERE f.receiver_id = auth.uid()
+    AND f.status = 'pending'
+  ORDER BY f.created_at DESC;
 END;
 $$;
 
@@ -333,3 +388,4 @@ GRANT EXECUTE ON FUNCTION get_friend_profiles() TO authenticated;
 GRANT EXECUTE ON FUNCTION get_friend_stats(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION search_profile_by_email(TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION search_profile_by_username(TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_friend_requests() TO authenticated;

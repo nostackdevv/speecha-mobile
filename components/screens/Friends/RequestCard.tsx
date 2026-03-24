@@ -8,26 +8,24 @@ import { COLORS } from '@/constants/colors';
 interface RequestCardProps {
   id: string;
   name: string;
-  onAccept: () => void;
-  onReject: () => void;
+  onRespond: (status: 'accepted' | 'rejected') => void;
   streak: number;
 }
 
 export const RequestCard = ({
   id,
   name,
-  onAccept,
-  onReject,
+  onRespond,
   streak,
 }: RequestCardProps) => {
   const handleAccept = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onAccept();
+    onRespond('accepted');
   };
 
   const handleReject = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onReject();
+    onRespond('rejected');
   };
 
   return (
