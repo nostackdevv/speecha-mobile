@@ -27,6 +27,7 @@ export const AddFriend = () => {
   const { mutate: sendFriendRequest } = useSendFriendRequest();
 
   const handleAdd = (id: string) => {
+    sendFriendRequest(id);
     setAddedIds((prev) => new Set(prev).add(id));
   };
 
@@ -72,8 +73,12 @@ export const AddFriend = () => {
                     id={profile.id}
                     key={profile.id}
                     name={profile.full_name}
-                    onAdd={() => sendFriendRequest(profile.id)}
-                    status={profile.friendship_status as FriendshipStatus}
+                    onAdd={() => handleAdd(profile.id)}
+                    status={
+                      addedIds.has(profile.id)
+                        ? 'pending_sent'
+                        : (profile.friendship_status as FriendshipStatus)
+                    }
                     username={profile.username}
                   />
                 ))

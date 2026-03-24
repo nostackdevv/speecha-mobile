@@ -132,11 +132,16 @@ export const useRemoveFriend = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (friendshipId: string) => {
+    mutationFn: async (friendProfileId: string) => {
+      if (!user?.id) throw new Error('Not authenticated');
+
       const { error } = await supabase
         .from('friendships')
         .delete()
-        .eq('id', friendshipId);
+        .or(
+          `and(sender_id.eq.${user.id},receiver_id.eq.${friendProfileId}),and(sender_id.eq.${friendProfileId},receiver_id.eq.${user.id})`
+        )
+        .eq('status', 'accepted');
 
       if (error) throw error;
     },
