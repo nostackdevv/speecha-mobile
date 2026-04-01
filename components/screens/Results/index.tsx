@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
 import { IconButton } from '@/components/ui/IconButton';
+import { MOCK_ANALYSIS } from '@/constants/mockSessions';
 import { useSpeechAnalysisDetail } from '@/hooks/useSpeechAnalyses';
 import { transformAnalysis } from '@/lib/transformAnalysis';
 
@@ -18,9 +19,14 @@ import { StatsRow } from './StatsRow';
 export const Results = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: dbRow, isLoading, error } = useSpeechAnalysisDetail(id);
-  const data = dbRow ? transformAnalysis(dbRow) : null;
+  const { id, mock } = useLocalSearchParams<{ id: string; mock?: string }>();
+  const isMock = mock === 'true';
+  const {
+    data: dbRow,
+    isLoading,
+    error,
+  } = useSpeechAnalysisDetail(isMock ? undefined : id);
+  const data = isMock ? MOCK_ANALYSIS : dbRow ? transformAnalysis(dbRow) : null;
 
   const handleDone = () => {
     router.replace('/');
@@ -30,7 +36,7 @@ export const Results = () => {
     router.replace('/');
   };
 
-  if (isLoading) {
+  if (!isMock && isLoading) {
     return (
       <View
         className="flex-1 items-center justify-center bg-white"

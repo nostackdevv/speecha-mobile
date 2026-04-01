@@ -27,7 +27,7 @@ export const SessionHistory = () => {
             date={formatSessionDate(session.date)}
             duration={formatDuration(session.durationSeconds)}
             key={session.id}
-            onPress={() => router.push('/results')}
+            onPress={() => router.push(`/results?id=${session.id}&mock=true`)}
             testID={`progress.session-${session.id}`}
             title={session.title}
           />
