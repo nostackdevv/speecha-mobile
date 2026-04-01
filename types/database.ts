@@ -39,3 +39,5 @@ export type FriendStats =
   Database['public']['Functions']['get_friend_stats']['Returns'][number];
 export type SearchedProfile =
   Database['public']['Functions']['search_profile_by_email']['Returns'][number];
+export type FriendRequest =
+  Database['public']['Functions']['get_friend_requests']['Returns'][number];

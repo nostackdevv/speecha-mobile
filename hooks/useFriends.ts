@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type {
   FriendProfile,
+  FriendRequest,
   FriendStats,
-  Friendship,
   SearchedProfile,
 } from '@/types/database';
 
@@ -28,16 +28,10 @@ export const useFriendList = () => {
 export const useFriendRequests = () => {
   const { user } = useAuth();
 
-  return useQuery<Friendship[]>({
+  return useQuery<FriendRequest[]>({
     queryKey: ['friend-requests', user?.id],
     queryFn: async () => {
-      if (!user?.id) throw new Error('User ID is required');
-
-      const { data, error } = await supabase
-        .from('friendships')
-        .select('*')
-        .eq('receiver_id', user.id)
-        .eq('status', 'pending');
+      const { data, error } = await supabase.rpc('get_friend_requests');
 
       if (error) throw error;
       return data;
@@ -138,11 +132,16 @@ export const useRemoveFriend = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (friendshipId: string) => {
+    mutationFn: async (friendProfileId: string) => {
+      if (!user?.id) throw new Error('Not authenticated');
+
       const { error } = await supabase
         .from('friendships')
         .delete()
-        .eq('id', friendshipId);
+        .or(
+          `and(sender_id.eq.${user.id},receiver_id.eq.${friendProfileId}),and(sender_id.eq.${friendProfileId},receiver_id.eq.${user.id})`
+        )
+        .eq('status', 'accepted');
 
       if (error) throw error;
     },

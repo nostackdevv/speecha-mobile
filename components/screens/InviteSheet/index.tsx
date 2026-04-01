@@ -4,7 +4,8 @@ import { BlurView } from 'expo-blur';
 import { Modal, Pressable, Share, Text, View } from 'react-native';
 
 import { IconButton } from '@/components/ui/IconButton';
-import { MOCK_INVITE_LINK } from '@/constants/mockFriends';
+
+const PLACEHOLDER_INVITE_LINK = 'Speecha.app/invite/voice_hero_22';
 
 interface InviteSheetProps {
   onClose: () => void;
@@ -13,12 +14,14 @@ interface InviteSheetProps {
 
 export const InviteSheet = ({ onClose, visible }: InviteSheetProps) => {
   const handleCopy = async () => {
-    await Clipboard.setStringAsync(MOCK_INVITE_LINK);
+    await Clipboard.setStringAsync(PLACEHOLDER_INVITE_LINK);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   const handleShare = async () => {
-    await Share.share({ message: `Join me on Speecha! ${MOCK_INVITE_LINK}` });
+    await Share.share({
+      message: `Join me on Speecha! ${PLACEHOLDER_INVITE_LINK}`,
+    });
   };
 
   return (
@@ -58,7 +61,7 @@ export const InviteSheet = ({ onClose, visible }: InviteSheetProps) => {
               Your invite link
             </Text>
             <Text className="mb-4 text-center font-sf-rounded-medium text-body-lg text-grey-500">
-              {MOCK_INVITE_LINK}
+              {PLACEHOLDER_INVITE_LINK}
             </Text>
             <View className="flex-row gap-3">
               <IconButton

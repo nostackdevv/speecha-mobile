@@ -1,3 +1,5 @@
+import type { RecordingAnalysis } from '@/types/api';
+
 type MockSession = {
   clarityScore: number;
   date: string;
@@ -131,6 +133,104 @@ export const MOCK_TOP_FILLERS = [
 export const MOCK_PRACTICED_DATES = new Set(
   MOCK_SESSIONS.map((s) => s.date.split('T')[0])
 );
+
+const MOCK_TRANSCRIPT_WORDS = [
+  'So',
+  'I',
+  'think',
+  'the',
+  'most',
+  'important',
+  'thing',
+  'um',
+  'when',
+  'you',
+  'are',
+  'preparing',
+  'for',
+  'an',
+  'interview',
+  'is',
+  'to',
+  'like',
+  'really',
+  'understand',
+  'the',
+  'role',
+  'and',
+  'um',
+  'what',
+  'the',
+  'company',
+  'is',
+  'looking',
+  'for',
+  'because',
+  'like',
+  'if',
+  'you',
+  'go',
+  'in',
+  'without',
+  'that',
+  'context',
+  'um',
+  'it',
+  'becomes',
+  'really',
+  'hard',
+  'to',
+  'actually',
+  'connect',
+  'your',
+  'experience',
+  'to',
+  'like',
+  'what',
+  'they',
+  'need',
+];
+
+const MOCK_FILLER_TEXTS = new Set(['um', 'like']);
+
+const mockWords = MOCK_TRANSCRIPT_WORDS.map((text, i) => ({
+  index: i,
+  displayText: text,
+  startChar:
+    MOCK_TRANSCRIPT_WORDS.slice(0, i).join(' ').length + (i > 0 ? 1 : 0),
+  endChar: MOCK_TRANSCRIPT_WORDS.slice(0, i + 1).join(' ').length,
+  confidence: 0.95,
+}));
+
+const mockFillers = mockWords
+  .filter((w) => MOCK_FILLER_TEXTS.has(w.displayText))
+  .map((w) => ({
+    startIndex: w.index,
+    displayText: w.displayText,
+    confidence: 0.9,
+  }));
+
+export const MOCK_ANALYSIS: RecordingAnalysis = {
+  transcript: MOCK_TRANSCRIPT_WORDS.join(' '),
+  words: mockWords,
+  duration: 59,
+  fillers: mockFillers,
+  fillerStats: {
+    totalFillers: mockFillers.length,
+    totalWords: mockWords.length,
+    fillerPercentage: (mockFillers.length / mockWords.length) * 100,
+    fillersPerMinute: 3.1,
+    topFillers: [
+      { text: 'um', count: 3 },
+      { text: 'like', count: 3 },
+    ],
+  },
+  clarityScore: {
+    score: 82,
+    version: '1',
+    rawScore: 82,
+  },
+};
 
 export const formatDuration = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);

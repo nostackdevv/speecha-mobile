@@ -5,7 +5,8 @@ import { ScrollView, View } from 'react-native';
 import { IconButton } from '@/components/ui/IconButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
-import { MOCK_FRIEND_REQUESTS } from '@/constants/mockFriends';
+import { useFriendRequests } from '@/hooks/useFriends';
+
 import { FriendsList } from './FriendsList';
 import { RequestsList } from './RequestsList';
 
@@ -15,11 +16,11 @@ type Tab = (typeof SEGMENTS)[number];
 export const Friends = () => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<Tab>('Friends');
+  const { data: requests } = useFriendRequests();
 
+  const requestCount = requests?.length ?? 0;
   const requestBadges =
-    MOCK_FRIEND_REQUESTS.length > 0
-      ? { Requests: MOCK_FRIEND_REQUESTS.length }
-      : undefined;
+    requestCount > 0 ? { Requests: requestCount } : undefined;
 
   return (
     <ScrollView

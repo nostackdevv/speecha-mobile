@@ -1,13 +1,23 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Icon } from '@/components/ui/Icon';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { COLORS } from '@/constants/colors';
-import { MOCK_FRIENDS, MOCK_FRIEND_STATS } from '@/constants/mockFriends';
+import {
+  useFriendList,
+  useFriendStats,
+  useRemoveFriend,
+} from '@/hooks/useFriends';
 
 import { ProfileStats } from './ProfileStats';
 import { RemoveFriendSheet } from './RemoveFriendSheet';
@@ -17,11 +27,28 @@ export const FriendProfile = () => {
   const { friendId } = useLocalSearchParams<{ friendId: string }>();
   const [removeVisible, setRemoveVisible] = useState(false);
 
-  const friend = MOCK_FRIENDS.find((f) => f.id === friendId);
-  const stats = friendId ? MOCK_FRIEND_STATS[friendId] : undefined;
+  const { data: friends } = useFriendList();
+  const { data: stats, isLoading: statsLoading } = useFriendStats(friendId);
+  const removeFriend = useRemoveFriend();
 
-  if (!friend || !stats) {
-    return null;
+  const friend = friends?.find((f) => f.id === friendId);
+
+  const handleRemoveFriend = () => {
+    removeFriend.mutate(friendId!, {
+      onSuccess: () => {
+        setRemoveVisible(false);
+        router.back();
+      },
+    });
+  };
+
+  // TODO: this could break if stuck as the user can't navigate back
+  if (!friend) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator />
+      </View>
+    );
   }
 
   return (
@@ -29,7 +56,7 @@ export const FriendProfile = () => {
       className="flex-1 bg-white"
       contentContainerClassName="px-6 flex-grow pt-16 pb-6"
       showsVerticalScrollIndicator={false}
-      testID="friend-profile.screen" // TODO: Should we set the inset stuff?
+      testID="friend-profile.screen"
     >
       <View className="gap-6">
         <ScreenHeader testID="friend-profile" />
@@ -38,9 +65,6 @@ export const FriendProfile = () => {
           <Avatar size="lg" />
           <Text className="font-sf-rounded-semibold text-h3 text-black">
             {friend.full_name}
-          </Text>
-          <Text className="text-body-base font-sf-rounded-medium text-grey-500">
-            Joined February, 2026
           </Text>
           <View
             className="flex-row items-center gap-1.5 rounded-32 bg-clarity-blue-0 px-4 py-2.5"
@@ -55,7 +79,13 @@ export const FriendProfile = () => {
 
         <View className="gap-4">
           <SectionHeader title="Speech Activity" trailing="Last 7 days" />
-          <ProfileStats stats={stats} />
+          {statsLoading ? (
+            <View className="items-center py-6">
+              <ActivityIndicator />
+            </View>
+          ) : stats ? (
+            <ProfileStats stats={stats} />
+          ) : null}
         </View>
       </View>
       <Pressable
@@ -70,14 +100,12 @@ export const FriendProfile = () => {
           Remove Friend?
         </Text>
       </Pressable>
+
       {removeVisible && (
         <RemoveFriendSheet
           name={friend.full_name}
           onClose={() => setRemoveVisible(false)}
-          onConfirm={() => {
-            setRemoveVisible(false);
-            router.back();
-          }}
+          onConfirm={handleRemoveFriend}
           visible={removeVisible}
         />
       )}

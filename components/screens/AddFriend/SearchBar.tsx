@@ -24,10 +24,13 @@ export const SearchBar = ({
   >
     <Icon color={COLORS.grey[500]} name="search" size={24} />
     <TextInput
-      accessibilityLabel="Search friends by name or username"
+      accessibilityLabel="Search friends by email or username"
+      autoCapitalize="none"
+      autoComplete="off"
+      autoCorrect={false}
       className="flex-1 font-sf-rounded-medium text-body-lg text-black"
       onChangeText={onChangeText}
-      placeholder="Search by name or username"
+      placeholder="Search by email or username"
       placeholderTextColor={COLORS.grey[500]}
       testID="add-friend.search"
       value={value}

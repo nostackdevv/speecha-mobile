@@ -207,6 +207,7 @@ export type Database = {
           full_name: string;
           id: string;
           longest_streak: number;
+          sessions_count: number;
           username: string;
         }[];
       };
@@ -226,6 +227,7 @@ export type Database = {
         Args: { search_email: string };
         Returns: {
           avatar_url: string;
+          friendship_status: string;
           full_name: string;
           id: string;
           username: string;
@@ -235,8 +237,21 @@ export type Database = {
         Args: { search_username: string };
         Returns: {
           avatar_url: string;
+          friendship_status: string;
           full_name: string;
           id: string;
+          username: string;
+        }[];
+      };
+      get_friend_requests: {
+        Args: never;
+        Returns: {
+          avatar_url: string;
+          created_at: string;
+          current_streak: number;
+          full_name: string;
+          id: string;
+          sender_id: string;
           username: string;
         }[];
       };

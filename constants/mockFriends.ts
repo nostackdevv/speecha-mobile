@@ -5,7 +5,7 @@ import type {
   SearchedProfile,
 } from '@/types/database';
 
-type MockFriend = FriendProfile & { sessions: number };
+type MockFriend = FriendProfile;
 
 type MockFriendRequest = {
   friendship: Friendship;
@@ -21,7 +21,7 @@ export const MOCK_FRIENDS: MockFriend[] = [
     full_name: 'Jeriel Joel',
     id: 'f1',
     longest_streak: 24,
-    sessions: 42,
+    sessions_count: 42,
     username: 'jeriel_joel',
   },
   {
@@ -30,7 +30,7 @@ export const MOCK_FRIENDS: MockFriend[] = [
     full_name: 'Hyeing',
     id: 'f2',
     longest_streak: 20,
-    sessions: 31,
+    sessions_count: 31,
     username: 'hyeing',
   },
   {
@@ -39,7 +39,7 @@ export const MOCK_FRIENDS: MockFriend[] = [
     full_name: 'Sam Chi',
     id: 'f3',
     longest_streak: 15,
-    sessions: 19,
+    sessions_count: 19,
     username: 'sam_chi',
   },
   {
@@ -48,7 +48,7 @@ export const MOCK_FRIENDS: MockFriend[] = [
     full_name: 'Victor Ali',
     id: 'f4',
     longest_streak: 30,
-    sessions: 56,
+    sessions_count: 56,
     username: 'victor_ali',
   },
   {
@@ -57,7 +57,7 @@ export const MOCK_FRIENDS: MockFriend[] = [
     full_name: 'Maria Gomez',
     id: 'f5',
     longest_streak: 11,
-    sessions: 14,
+    sessions_count: 14,
     username: 'maria_gomez',
   },
   {
@@ -66,7 +66,7 @@ export const MOCK_FRIENDS: MockFriend[] = [
     full_name: 'James Smith',
     id: 'f6',
     longest_streak: 16,
-    sessions: 27,
+    sessions_count: 27,
     username: 'james_smith',
   },
 ];
@@ -86,6 +86,7 @@ export const MOCK_FRIEND_REQUESTS: MockFriendRequest[] = [
       full_name: 'Alex Rivera',
       id: 'r1',
       longest_streak: 12,
+      sessions_count: 15,
       username: 'alex_rivera',
     },
   },
@@ -103,6 +104,7 @@ export const MOCK_FRIEND_REQUESTS: MockFriendRequest[] = [
       full_name: 'Priya Sharma',
       id: 'r2',
       longest_streak: 21,
+      sessions_count: 28,
       username: 'priya_sharma',
     },
   },
@@ -120,6 +122,7 @@ export const MOCK_FRIEND_REQUESTS: MockFriendRequest[] = [
       full_name: 'David Park',
       id: 'r3',
       longest_streak: 8,
+      sessions_count: 6,
       username: 'david_park',
     },
   },
@@ -185,6 +188,7 @@ export const MOCK_FRIEND_STATS: Record<string, FriendStats> = {
 export const MOCK_SUGGESTED_FRIENDS: SuggestedFriend[] = [
   {
     avatar_url: '',
+    friendship_status: 'none',
     full_name: 'Emma Wilson',
     id: 's1',
     subtitle: 'From your contacts',
@@ -192,6 +196,7 @@ export const MOCK_SUGGESTED_FRIENDS: SuggestedFriend[] = [
   },
   {
     avatar_url: '',
+    friendship_status: 'none',
     full_name: 'Liam Chen',
     id: 's2',
     subtitle: '3 mutual friends',
@@ -199,6 +204,7 @@ export const MOCK_SUGGESTED_FRIENDS: SuggestedFriend[] = [
   },
   {
     avatar_url: '',
+    friendship_status: 'none',
     full_name: 'Sofia Martinez',
     id: 's3',
     subtitle: 'From your contacts',
