@@ -46,7 +46,7 @@ export const AllSessions = () => {
           return next;
         });
       } else {
-        router.push('/results');
+        router.push(`/results?id=${id}&mock=true`);
       }
     },
     [selectionMode, router]
