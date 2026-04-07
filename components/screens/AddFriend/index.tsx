@@ -5,8 +5,13 @@ import { InviteSheet } from '@/components/screens/InviteSheet';
 import { Chip } from '@/components/ui/Chip';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { MOCK_SUGGESTED_FRIENDS } from '@/constants/mockFriends';
-import { useSearchProfiles, useSendFriendRequest } from '@/hooks/useFriends';
+import { useProfile } from '@/hooks/useProfile';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  useSearchProfiles,
+  useSendFriendRequest,
+  useSuggestedFriends,
+} from '@/hooks/useFriends';
 import type { FriendshipStatus } from '@/types/friendship';
 
 import { ActionCard } from './ActionCard';
@@ -15,16 +20,26 @@ import { SearchResultCard } from './SearchResultCard';
 import { SuggestedFriendCard } from './SuggestedFriendCard';
 
 export const AddFriend = () => {
+  const { user } = useAuth();
   const [searchText, setSearchText] = useState('');
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const [inviteSheetVisible, setInviteSheetVisible] = useState(false);
+  const { data: profile } = useProfile();
 
   // TODO: add 300ms debounce on searchText before passing to useSearchProfiles
   const isSearching = searchText.length >= 2;
   const { data: searchResults, isLoading: isSearchLoading } =
     useSearchProfiles(searchText);
+  const { data: suggestedFriends, isLoading: isSuggestedFriendsLoading } =
+    useSuggestedFriends();
   // TODO: add optimistic update + error toast on sendFriendRequest mutation
   const { mutate: sendFriendRequest } = useSendFriendRequest();
+
+  const baseUrl =
+    process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ??
+    'https://speecha.app';
+  const inviteCode = profile?.username ?? user?.id ?? 'friend';
+  const inviteLink = `${baseUrl}/invite/${encodeURIComponent(inviteCode)}`;
 
   const handleAdd = (id: string) => {
     sendFriendRequest(id);
@@ -93,25 +108,37 @@ export const AddFriend = () => {
               <View className="flex-row items-center justify-between">
                 <SectionHeader title="Suggested friends" />
                 <Chip
-                  label={`${MOCK_SUGGESTED_FRIENDS.length} new`}
+                  label={`${suggestedFriends?.length ?? 0} new`}
                   variant="accent"
                 />
               </View>
-              {MOCK_SUGGESTED_FRIENDS.map((friend) => (
-                <SuggestedFriendCard
-                  added={addedIds.has(friend.id)}
-                  id={friend.id}
-                  key={friend.id}
-                  name={friend.full_name}
-                  onAdd={() => handleAdd(friend.id)}
-                  subtitle={friend.subtitle}
+              {isSuggestedFriendsLoading ? (
+                <ActivityIndicator
+                  className="py-8"
+                  testID="add-friend.suggested-loading"
                 />
-              ))}
+              ) : suggestedFriends && suggestedFriends.length > 0 ? (
+                suggestedFriends.map((friend) => (
+                  <SuggestedFriendCard
+                    added={addedIds.has(friend.id)}
+                    id={friend.id}
+                    key={friend.id}
+                    name={friend.full_name}
+                    onAdd={() => handleAdd(friend.id)}
+                    subtitle={`@${friend.username}`}
+                  />
+                ))
+              ) : (
+                <Text className="text-body-base py-8 text-center font-sf-rounded-medium text-grey-500">
+                  No suggestions right now
+                </Text>
+              )}
             </View>
           )}
         </View>
       </ScrollView>
       <InviteSheet
+        inviteLink={inviteLink}
         onClose={() => setInviteSheetVisible(false)}
         visible={inviteSheetVisible}
       />

@@ -7,6 +7,11 @@ import {
   transcribeAudio,
 } from '@/lib/api';
 import { audioRecordingStorage } from '@/lib/audioRecordingStorage';
+import {
+  pendingRecordingQueue,
+  QueuedForSyncError,
+} from '@/lib/pendingRecordingQueue';
+import { isRetryableSyncError } from '@/lib/retryableErrors';
 import type { RecordingAnalysis } from '@/types/api';
 
 import { useCreateSpeechAnalysis } from './useSpeechAnalyses';
@@ -21,6 +26,7 @@ type AnalyzeInput = {
 type AnalyzeResult = {
   analysis: RecordingAnalysis;
   analysisId: string;
+  localAudioUri: string;
 };
 
 const EMPTY_RESULT: RecordingAnalysis = {
@@ -47,51 +53,66 @@ export const useAnalyzeRecording = () => {
       uri,
       promptId,
     }: AnalyzeInput): Promise<AnalyzeResult> => {
-      setStatus('transcribing');
-      const transcription = await transcribeAudio(uri);
+      try {
+        setStatus('transcribing');
+        const transcription = await transcribeAudio(uri);
 
-      let result: RecordingAnalysis;
+        let result: RecordingAnalysis;
 
-      if (!transcription.transcript) {
-        result = { ...EMPTY_RESULT, duration: transcription.duration };
-      } else {
-        setStatus('analyzing');
-        const analysis = await analyzeTranscript({
-          transcript: transcription.transcript,
-          words: toTranscriptWords(transcription.words),
-          duration: transcription.duration,
+        if (!transcription.transcript) {
+          result = { ...EMPTY_RESULT, duration: transcription.duration };
+        } else {
+          setStatus('analyzing');
+          const analysis = await analyzeTranscript({
+            transcript: transcription.transcript,
+            words: toTranscriptWords(transcription.words),
+            duration: transcription.duration,
+          });
+
+          result = {
+            transcript: transcription.transcript,
+            words: transcription.words,
+            duration: transcription.duration,
+            fillers: analysis.fillers,
+            fillerStats: analysis.fillerStats,
+            clarityScore: analysis.clarityScore,
+          };
+        }
+
+        setStatus('saving');
+        const saved = await createAnalysis.mutateAsync({
+          clarity_score: Math.round(result.clarityScore?.score ?? 0),
+          duration_seconds: Math.max(1, Math.round(result.duration)),
+          filler_count: result.fillerStats.totalFillers,
+          fillers_per_minute: Math.max(0, result.fillerStats.fillersPerMinute),
+          prompt_id: promptId ?? null,
+          transcript_data: {
+            fillers: result.fillers,
+            words: result.words,
+          },
         });
 
-        result = {
-          transcript: transcription.transcript,
-          words: transcription.words,
-          duration: transcription.duration,
-          fillers: analysis.fillers,
-          fillerStats: analysis.fillerStats,
-          clarityScore: analysis.clarityScore,
-        };
+        let localAudioUri = uri;
+
+        try {
+          localAudioUri = audioRecordingStorage.save(saved.id, uri);
+        } catch {
+          // Keep original URI as fallback for immediate replay.
+          localAudioUri = uri;
+        }
+
+        return { analysis: result, analysisId: saved.id, localAudioUri };
+      } catch (error) {
+        if (!isRetryableSyncError(error)) {
+          throw error;
+        }
+
+        const queued = await pendingRecordingQueue.enqueue({
+          promptId,
+          tempUri: uri,
+        });
+        throw new QueuedForSyncError(queued.id);
       }
-
-      setStatus('saving');
-      const saved = await createAnalysis.mutateAsync({
-        clarity_score: Math.round(result.clarityScore?.score ?? 0),
-        duration_seconds: Math.max(1, Math.round(result.duration)),
-        filler_count: result.fillerStats.totalFillers,
-        fillers_per_minute: Math.max(0, result.fillerStats.fillersPerMinute),
-        prompt_id: promptId ?? null,
-        transcript_data: {
-          fillers: result.fillers,
-          words: result.words,
-        },
-      });
-
-      try {
-        audioRecordingStorage.save(saved.id, uri);
-      } catch {
-        // silent fail for audio persistence
-      }
-
-      return { analysis: result, analysisId: saved.id };
     },
     onSettled: () => {
       setStatus('idle');

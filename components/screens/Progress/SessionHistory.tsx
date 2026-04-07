@@ -1,17 +1,19 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { SessionCard } from '@/components/ui/SessionCard';
+import { useSpeechAnalysisList } from '@/hooks/useSpeechAnalyses';
 import {
   formatDuration,
   formatSessionDate,
-  MOCK_SESSIONS,
-} from '@/constants/mockSessions';
+  getSessionTitle,
+} from '@/lib/speechMetrics';
 
 export const SessionHistory = () => {
   const router = useRouter();
-  const latestSessions = MOCK_SESSIONS.slice(0, 5);
+  const { data: sessions, isLoading } = useSpeechAnalysisList();
+  const latestSessions = (sessions ?? []).slice(0, 5);
 
   return (
     <View className="gap-4">
@@ -21,18 +23,28 @@ export const SessionHistory = () => {
         trailing="see all"
         trailingIsAction
       />
-      <View className="gap-3">
-        {latestSessions.map((session) => (
-          <SessionCard
-            date={formatSessionDate(session.date)}
-            duration={formatDuration(session.durationSeconds)}
-            key={session.id}
-            onPress={() => router.push(`/results?id=${session.id}&mock=true`)}
-            testID={`progress.session-${session.id}`}
-            title={session.title}
-          />
-        ))}
-      </View>
+      {isLoading ? (
+        <View className="items-center py-4">
+          <ActivityIndicator />
+        </View>
+      ) : latestSessions.length > 0 ? (
+        <View className="gap-3">
+          {latestSessions.map((session) => (
+            <SessionCard
+              date={formatSessionDate(session.created_at)}
+              duration={formatDuration(session.duration_seconds)}
+              key={session.id}
+              onPress={() => router.push(`/results?id=${session.id}`)}
+              testID={`progress.session-${session.id}`}
+              title={getSessionTitle(session.prompt_id)}
+            />
+          ))}
+        </View>
+      ) : (
+        <Text className="py-4 text-center font-sf-rounded-medium text-body-sm text-grey-500">
+          No sessions yet
+        </Text>
+      )}
     </View>
   );
 };

@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useEffect, useRef } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
@@ -14,15 +15,34 @@ interface FriendCardProps {
 
 export const FriendCard = ({ id, name, sessions, streak }: FriendCardProps) => {
   const router = useRouter();
+  const isNavigatingRef = useRef(false);
+  const unlockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (unlockTimerRef.current) {
+        clearTimeout(unlockTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handlePress = () => {
+    if (isNavigatingRef.current) return;
+
+    isNavigatingRef.current = true;
+    router.navigate({ pathname: '/friend-profile', params: { friendId: id } });
+
+    unlockTimerRef.current = setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 600);
+  };
 
   return (
     <Pressable
       accessibilityLabel={`View ${name}'s profile`}
       accessibilityRole="button"
       className="flex-row items-center gap-3 rounded-20 bg-grey-50 p-4"
-      onPress={() =>
-        router.push({ pathname: '/friend-profile', params: { friendId: id } })
-      }
+      onPress={handlePress}
       style={({ pressed }) => ({
         borderCurve: 'continuous',
         opacity: pressed ? 0.7 : 1,

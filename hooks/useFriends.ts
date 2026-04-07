@@ -73,6 +73,29 @@ export const useSearchProfiles = (query: string) => {
   });
 };
 
+export const useSuggestedFriends = (limit = 8) => {
+  const { user } = useAuth();
+
+  return useQuery<SearchedProfile[]>({
+    queryKey: ['suggested-friends', user?.id, limit],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('search_profile_by_username', {
+        search_username: '',
+      });
+
+      if (error) throw error;
+
+      const profiles = (data ?? []) as SearchedProfile[];
+
+      return profiles
+        .filter((profile) => profile.friendship_status === 'none')
+        .sort((a, b) => a.username.localeCompare(b.username))
+        .slice(0, limit);
+    },
+    enabled: !!user?.id,
+  });
+};
+
 export const useSendFriendRequest = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -94,6 +117,12 @@ export const useSendFriendRequest = () => {
       queryClient.invalidateQueries({ queryKey: ['friend-list', user?.id] });
       queryClient.invalidateQueries({
         queryKey: ['friend-requests', user?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['suggested-friends', user?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['search-profiles'],
       });
     },
   });

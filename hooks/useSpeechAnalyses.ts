@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { supabase } from '@/lib/supabase';
+import { audioRecordingStorage } from '@/lib/audioRecordingStorage';
 import type { SpeechAnalysis, SpeechAnalysisInsert } from '@/types/database';
 
 import { useAuth } from './useAuth';
@@ -90,6 +91,7 @@ export const useDeleteSpeechAnalysis = () => {
       if (error) throw error;
     },
     onSuccess: (_, deletedId) => {
+      audioRecordingStorage.delete(deletedId);
       queryClient.invalidateQueries({
         queryKey: ['speech-analysis-list', user?.id],
       });

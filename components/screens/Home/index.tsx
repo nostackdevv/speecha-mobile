@@ -1,27 +1,42 @@
+import { useMemo } from 'react';
 import { useRouter } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
 import { IconButton } from '@/components/ui/IconButton';
 import { SectionHeader } from '@/components/ui/SectionHeader';
+import { useProfile } from '@/hooks/useProfile';
+import { useSpeechAnalysisList } from '@/hooks/useSpeechAnalyses';
+import {
+  formatHomeDate,
+  formatTimeAgo,
+  getCompletedDaysThisWeek,
+  getSessionTitle,
+} from '@/lib/speechMetrics';
 
 import { HomeHeader } from './HomeHeader';
 import { RecordingModeCard } from './RecordingModeCard';
 import { StreakCard } from './StreakCard';
 
-// Mock data — replace with real data from hooks
-const MOCK_NAME = 'Samuel';
-const MOCK_DATE = 'Monday, Feb 16';
-const MOCK_STREAK = 1;
-const MOCK_COMPLETED_DAYS = [true, false, false, false, false, false, false];
-const MOCK_LAST_SESSION = {
-  clarityScore: 88,
-  prompt: 'Interview Preparation',
-  timeAgo: '2m ago',
-};
-
 export const Home = () => {
   const router = useRouter();
+  const { data: profile } = useProfile();
+  const { data: sessions, isLoading: isSessionsLoading } =
+    useSpeechAnalysisList();
+
+  const lastSession = sessions?.[0] ?? null;
+  const completedDays = useMemo(
+    () => getCompletedDaysThisWeek(sessions ?? []),
+    [sessions]
+  );
+  const name =
+    profile?.full_name?.trim().split(' ')[0] ?? profile?.username ?? 'there';
+  const dateLabel = formatHomeDate();
+  const streak = profile?.current_streak ?? 0;
+  const lastSessionTitle = getSessionTitle(lastSession?.prompt_id ?? null);
+  const lastSessionTimeAgo = lastSession
+    ? formatTimeAgo(lastSession.created_at)
+    : undefined;
 
   return (
     <ScrollView
@@ -33,12 +48,12 @@ export const Home = () => {
     >
       <View className="gap-8">
         <HomeHeader
-          date={MOCK_DATE}
-          name={MOCK_NAME}
-          onAvatarPress={() => {}}
+          date={dateLabel}
+          name={name}
+          onAvatarPress={() => router.push('/profile')}
         />
 
-        <StreakCard completedDays={MOCK_COMPLETED_DAYS} streak={MOCK_STREAK} />
+        <StreakCard completedDays={completedDays} streak={streak} />
 
         <View className="gap-4">
           <View className="flex-row items-center justify-between">
@@ -73,25 +88,32 @@ export const Home = () => {
         </View>
 
         <View className="gap-4">
-          <SectionHeader
-            title="Last session"
-            trailing={MOCK_LAST_SESSION.timeAgo}
-          />
+          <SectionHeader title="Last session" trailing={lastSessionTimeAgo} />
 
           <Card testID="home.last-session">
-            <View className="flex-row items-center justify-between">
-              <Text className="font-sf-rounded-medium text-body-md text-black">
-                {MOCK_LAST_SESSION.prompt}
-              </Text>
-              <View className="items-end">
-                <Text className="font-sf-rounded-bold text-body-xl text-clarity-blue">
-                  {MOCK_LAST_SESSION.clarityScore}%
-                </Text>
-                <Text className="font-sf-rounded-medium text-body-xs text-grey-400">
-                  CLARITY
-                </Text>
+            {isSessionsLoading ? (
+              <View className="items-center py-3">
+                <ActivityIndicator />
               </View>
-            </View>
+            ) : lastSession ? (
+              <View className="flex-row items-center justify-between">
+                <Text className="font-sf-rounded-medium text-body-md text-black">
+                  {lastSessionTitle}
+                </Text>
+                <View className="items-end">
+                  <Text className="font-sf-rounded-bold text-body-xl text-clarity-blue">
+                    {lastSession.clarity_score}%
+                  </Text>
+                  <Text className="font-sf-rounded-medium text-body-xs text-grey-400">
+                    CLARITY
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <Text className="font-sf-rounded-medium text-body-md text-grey-500">
+                No sessions yet. Start your first practice.
+              </Text>
+            )}
           </Card>
         </View>
       </View>

@@ -1,11 +1,20 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Share,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
 import { IconButton } from '@/components/ui/IconButton';
-import { MOCK_ANALYSIS } from '@/constants/mockSessions';
 import { useSpeechAnalysisDetail } from '@/hooks/useSpeechAnalyses';
+import { audioRecordingStorage } from '@/lib/audioRecordingStorage';
+import { getSessionTitle } from '@/lib/speechMetrics';
 import { transformAnalysis } from '@/lib/transformAnalysis';
 
 import { ArchetypeBadge } from './ArchetypeBadge';
@@ -16,27 +25,58 @@ import { ProTipCard } from './ProTipCard';
 import { SpeechTranscript } from './SpeechTranscript';
 import { StatsRow } from './StatsRow';
 
+const normalizeRouteParam = (
+  value: string | string[] | undefined
+): string | undefined => {
+  return Array.isArray(value) ? value[0] : value;
+};
+
 export const Results = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { id, mock } = useLocalSearchParams<{ id: string; mock?: string }>();
-  const isMock = mock === 'true';
-  const {
-    data: dbRow,
-    isLoading,
-    error,
-  } = useSpeechAnalysisDetail(isMock ? undefined : id);
-  const data = isMock ? MOCK_ANALYSIS : dbRow ? transformAnalysis(dbRow) : null;
+  const params = useLocalSearchParams<{
+    audioUri?: string | string[];
+    id?: string | string[];
+  }>();
+  const id = normalizeRouteParam(params.id);
+  const fallbackAudioUri = normalizeRouteParam(params.audioUri);
+  const { data: dbRow, isLoading, error } = useSpeechAnalysisDetail(id);
+  const data = dbRow ? transformAnalysis(dbRow) : null;
 
   const handleDone = () => {
     router.replace('/');
   };
 
   const handleTryAgain = () => {
-    router.replace('/');
+    const promptId = dbRow?.prompt_id ?? undefined;
+    if (promptId) {
+      router.replace({ pathname: '/recording', params: { promptId } });
+      return;
+    }
+    router.replace('/recording');
   };
 
-  if (!isMock && isLoading) {
+  const handleShare = async () => {
+    if (!data) return;
+
+    try {
+      const sessionTitle = getSessionTitle(dbRow?.prompt_id ?? null);
+      const shareScore = data.clarityScore?.score ?? 0;
+      const summary = [
+        `I just finished a Speecha session: ${sessionTitle}`,
+        `Clarity score: ${shareScore}%`,
+        `Fillers: ${data.fillerStats.totalFillers}`,
+        `Filler/min: ${data.fillerStats.fillersPerMinute.toFixed(1)}`,
+      ].join('\n');
+
+      await Share.share({ message: summary });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      Alert.alert('Share failed', 'Could not share your results right now.');
+    }
+  };
+
+  if (isLoading) {
     return (
       <View
         className="flex-1 items-center justify-center bg-white"
@@ -69,6 +109,11 @@ export const Results = () => {
   const score = data.clarityScore?.score ?? 0;
   const hasFillers = data.fillerStats.totalFillers > 0;
   const topFiller = data.fillerStats.topFillers[0]?.text;
+  const persistedAudioUri =
+    id && audioRecordingStorage.exists(id)
+      ? audioRecordingStorage.getUri(id)
+      : null;
+  const audioUri = persistedAudioUri ?? fallbackAudioUri ?? null;
 
   return (
     <View
@@ -132,7 +177,7 @@ export const Results = () => {
           <Button
             className="flex-1"
             icon="share"
-            onPress={() => {}}
+            onPress={handleShare}
             testID="results.share"
             title="Share"
           />
@@ -140,7 +185,7 @@ export const Results = () => {
       </ScrollView>
 
       <View style={{ paddingBottom: insets.bottom }}>
-        <AudioPlayer />
+        <AudioPlayer uri={audioUri} />
       </View>
     </View>
   );

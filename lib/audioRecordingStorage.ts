@@ -4,20 +4,39 @@ const getRecordingsDir = (): Directory => {
   return new Directory(Paths.document, 'speecha/recordings');
 };
 
+const ensureRecordingsDir = (): Directory => {
+  const recordingsDir = getRecordingsDir();
+
+  if (!recordingsDir.exists) {
+    recordingsDir.create({ idempotent: true, intermediates: true });
+  }
+
+  return recordingsDir;
+};
+
 const getFile = (analysisId: string): File => {
   return new File(getRecordingsDir(), `${analysisId}.m4a`);
 };
 
 export const audioRecordingStorage = {
   save: (analysisId: string, tempUri: string): string => {
-    const recordingsDir = getRecordingsDir();
-    if (!recordingsDir.exists) {
-      recordingsDir.create();
-    }
+    ensureRecordingsDir();
 
     const tempFile = new File(tempUri);
     const destFile = getFile(analysisId);
-    tempFile.move(destFile);
+
+    if (destFile.exists) {
+      destFile.delete();
+    }
+
+    try {
+      tempFile.move(destFile);
+    } catch {
+      tempFile.copy(destFile);
+      if (tempFile.exists) {
+        tempFile.delete();
+      }
+    }
 
     return destFile.uri;
   },

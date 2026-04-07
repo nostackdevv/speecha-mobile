@@ -1,27 +1,36 @@
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { BlurView } from 'expo-blur';
-import { Modal, Pressable, Share, Text, View } from 'react-native';
+import { Alert, Modal, Pressable, Share, Text, View } from 'react-native';
 
 import { IconButton } from '@/components/ui/IconButton';
 
-const PLACEHOLDER_INVITE_LINK = 'Speecha.app/invite/voice_hero_22';
-
 interface InviteSheetProps {
+  inviteLink: string;
   onClose: () => void;
   visible: boolean;
 }
 
-export const InviteSheet = ({ onClose, visible }: InviteSheetProps) => {
+export const InviteSheet = ({
+  inviteLink,
+  onClose,
+  visible,
+}: InviteSheetProps) => {
   const handleCopy = async () => {
-    await Clipboard.setStringAsync(PLACEHOLDER_INVITE_LINK);
+    await Clipboard.setStringAsync(inviteLink);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Alert.alert('Copied', 'Invite link copied to clipboard.');
   };
 
   const handleShare = async () => {
-    await Share.share({
-      message: `Join me on Speecha! ${PLACEHOLDER_INVITE_LINK}`,
-    });
+    try {
+      await Share.share({
+        message: `Join me on Speecha! ${inviteLink}`,
+      });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      Alert.alert('Share failed', 'Could not share the invite link right now.');
+    }
   };
 
   return (
@@ -61,7 +70,7 @@ export const InviteSheet = ({ onClose, visible }: InviteSheetProps) => {
               Your invite link
             </Text>
             <Text className="mb-4 text-center font-sf-rounded-medium text-body-lg text-grey-500">
-              {PLACEHOLDER_INVITE_LINK}
+              {inviteLink}
             </Text>
             <View className="flex-row gap-3">
               <IconButton

@@ -1,6 +1,7 @@
-import { Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
-import { MOCK_WEEK_SUMMARY } from '@/constants/mockSessions';
+import { useSpeechAnalysisList } from '@/hooks/useSpeechAnalyses';
+import { getThisWeekSummary } from '@/lib/speechMetrics';
 
 const StatItem = ({ label, value }: { label: string; value: string }) => (
   <View className="flex-1 items-center gap-0.5 p-2">
@@ -18,6 +19,9 @@ const Divider = () => (
 );
 
 export const WeekSummary = () => {
+  const { data: sessions, isLoading } = useSpeechAnalysisList();
+  const weekSummary = getThisWeekSummary(sessions ?? []);
+
   return (
     <View
       className="overflow-hidden rounded-[24px] bg-grey-50 p-5"
@@ -27,22 +31,25 @@ export const WeekSummary = () => {
         <Text className="font-sf-rounded-medium text-body-lg text-black">
           This week summary
         </Text>
-        <View className="flex-row items-center">
-          <StatItem
-            label="SESSIONS"
-            value={String(MOCK_WEEK_SUMMARY.sessions)}
-          />
-          <Divider />
-          <StatItem
-            label="FILLER/MIN"
-            value={String(MOCK_WEEK_SUMMARY.fillersPerMinute)}
-          />
-          <Divider />
-          <StatItem
-            label="AVR CLARITY"
-            value={`${MOCK_WEEK_SUMMARY.avgClarity}%`}
-          />
-        </View>
+        {isLoading ? (
+          <View className="items-center py-5">
+            <ActivityIndicator />
+          </View>
+        ) : (
+          <View className="flex-row items-center">
+            <StatItem label="SESSIONS" value={String(weekSummary.sessions)} />
+            <Divider />
+            <StatItem
+              label="FILLER/MIN"
+              value={String(weekSummary.fillersPerMinute)}
+            />
+            <Divider />
+            <StatItem
+              label="AVR CLARITY"
+              value={`${weekSummary.avgClarity}%`}
+            />
+          </View>
+        )}
       </View>
     </View>
   );

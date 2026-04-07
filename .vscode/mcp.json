@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "figma": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp@0.6.0", "--stdio"],
+      "envFile": "${workspaceFolder}/.env"
+    }
+  }
+}

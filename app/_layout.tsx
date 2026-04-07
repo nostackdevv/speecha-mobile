@@ -8,6 +8,7 @@ import '../global.css';
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { useAuth } from '@/hooks/useAuth';
+import { usePendingRecordingSync } from '@/hooks/usePendingRecordingSync';
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,12 @@ const RootNavigator = () => {
       <Stack.Screen name="calendar" options={{ headerShown: false }} />
       <Stack.Screen name="add-friend" options={{ headerShown: false }} />
       <Stack.Screen name="friend-profile" options={{ headerShown: false }} />
+      <Stack.Screen name="profile" options={{ headerShown: false }} />
+      <Stack.Screen name="badges" options={{ headerShown: false }} />
+      <Stack.Screen name="profile-picture" options={{ headerShown: false }} />
+      <Stack.Screen name="settings" options={{ headerShown: false }} />
+      <Stack.Screen name="paywall" options={{ headerShown: false }} />
+      <Stack.Screen name="pro-welcome" options={{ headerShown: false }} />
       <Stack.Screen
         name="how-speecha-works"
         options={{
@@ -57,6 +64,11 @@ const RootNavigator = () => {
       />
     </Stack>
   );
+};
+
+const BackgroundSyncBootstrap = () => {
+  usePendingRecordingSync();
+  return null;
 };
 
 export default function RootLayout() {
@@ -83,6 +95,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <BackgroundSyncBootstrap />
         <RootNavigator />
       </AuthProvider>
     </QueryClientProvider>

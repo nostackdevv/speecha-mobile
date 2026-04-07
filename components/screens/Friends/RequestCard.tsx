@@ -7,6 +7,7 @@ import { COLORS } from '@/constants/colors';
 
 interface RequestCardProps {
   id: string;
+  isSubmitting?: boolean;
   name: string;
   onRespond: (status: 'accepted' | 'rejected') => void;
   streak: number;
@@ -14,6 +15,7 @@ interface RequestCardProps {
 
 export const RequestCard = ({
   id,
+  isSubmitting = false,
   name,
   onRespond,
   streak,
@@ -51,8 +53,11 @@ export const RequestCard = ({
           accessibilityLabel={`Accept ${name}'s request`}
           accessibilityRole="button"
           className="h-8 w-8 items-center justify-center rounded-full bg-clarity-blue"
+          disabled={isSubmitting}
           onPress={handleAccept}
-          style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+          style={({ pressed }) => ({
+            opacity: isSubmitting ? 0.5 : pressed ? 0.7 : 1,
+          })}
           testID={`friends.accept-${id}`}
         >
           <Icon color={COLORS.white} name="check" size={18} />
@@ -61,8 +66,11 @@ export const RequestCard = ({
           accessibilityLabel={`Reject ${name}'s request`}
           accessibilityRole="button"
           className="h-8 w-8 items-center justify-center rounded-full bg-grey-200"
+          disabled={isSubmitting}
           onPress={handleReject}
-          style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+          style={({ pressed }) => ({
+            opacity: isSubmitting ? 0.5 : pressed ? 0.7 : 1,
+          })}
           testID={`friends.reject-${id}`}
         >
           <Icon color={COLORS.grey[500]} name="close" size={16} />

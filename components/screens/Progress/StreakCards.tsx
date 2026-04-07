@@ -2,12 +2,13 @@ import { Text, View } from 'react-native';
 
 import { Icon } from '@/components/ui/Icon';
 import { COLORS } from '@/constants/colors';
-import {
-  MOCK_CURRENT_STREAK,
-  MOCK_LONGEST_STREAK,
-} from '@/constants/mockSessions';
+import { useProfile } from '@/hooks/useProfile';
 
 export const StreakCards = () => {
+  const { data: profile } = useProfile();
+  const currentStreak = profile?.current_streak ?? 0;
+  const longestStreak = profile?.longest_streak ?? 0;
+
   return (
     <View className="flex-row gap-3">
       <View
@@ -25,7 +26,7 @@ export const StreakCards = () => {
             className="font-sf-rounded-bold text-grey-100"
             style={{ fontSize: 40, lineHeight: 48 }}
           >
-            {MOCK_CURRENT_STREAK}
+            {currentStreak}
           </Text>
           <Text className="mb-1 ml-1 font-sf-rounded-medium text-base text-grey-100">
             days
@@ -58,7 +59,7 @@ export const StreakCards = () => {
             className="font-sf-rounded-bold text-black"
             style={{ fontSize: 40, lineHeight: 48 }}
           >
-            {MOCK_LONGEST_STREAK}
+            {longestStreak}
           </Text>
           <Text className="mb-1 ml-1 font-sf-rounded-medium text-base text-black">
             days

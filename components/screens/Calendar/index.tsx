@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { MOCK_SESSIONS } from '@/constants/mockSessions';
+import { useSpeechAnalysisList } from '@/hooks/useSpeechAnalyses';
 
 import { MonthCalendar } from './MonthCalendar';
 
@@ -31,18 +31,30 @@ const getMonthsBetween = (
 
 export const Calendar = () => {
   const insets = useSafeAreaInsets();
+  const { data: sessions, isLoading } = useSpeechAnalysisList();
 
   const { months, practicedDates, sessionCountByMonth } = useMemo(() => {
     const dates = new Set<string>();
     const countByMonth: Record<string, number> = {};
 
-    let earliestDate = new Date(MOCK_SESSIONS[0].date);
+    const allSessions = sessions ?? [];
 
-    MOCK_SESSIONS.forEach((session) => {
-      const dateStr = session.date.split('T')[0];
+    if (allSessions.length === 0) {
+      const now = new Date();
+      return {
+        months: [{ month: now.getMonth(), year: now.getFullYear() }],
+        practicedDates: dates,
+        sessionCountByMonth: countByMonth,
+      };
+    }
+
+    let earliestDate = new Date(allSessions[0].created_at);
+
+    allSessions.forEach((session) => {
+      const dateStr = session.created_at.split('T')[0];
       dates.add(dateStr);
 
-      const d = new Date(session.date);
+      const d = new Date(session.created_at);
       if (d < earliestDate) earliestDate = d;
 
       const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
@@ -64,7 +76,7 @@ export const Calendar = () => {
       practicedDates: dates,
       sessionCountByMonth: countByMonth,
     };
-  }, []);
+  }, [sessions]);
 
   return (
     <View className="flex-1 bg-white" testID="calendar.screen">
@@ -72,23 +84,35 @@ export const Calendar = () => {
         <ScreenHeader testID="calendar" title="Calendar" />
       </View>
 
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-6 pb-10 pt-8"
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="gap-8">
-          {months.map(({ month, year }) => (
-            <MonthCalendar
-              key={`${year}-${month}`}
-              month={month}
-              practicedDates={practicedDates}
-              sessionCount={sessionCountByMonth[`${year}-${month}`] ?? 0}
-              year={year}
-            />
-          ))}
+      {isLoading ? (
+        <View className="items-center py-10">
+          <ActivityIndicator />
         </View>
-      </ScrollView>
+      ) : (
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="px-6 pb-10 pt-8"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="gap-8">
+            {months.length > 0 ? (
+              months.map(({ month, year }) => (
+                <MonthCalendar
+                  key={`${year}-${month}`}
+                  month={month}
+                  practicedDates={practicedDates}
+                  sessionCount={sessionCountByMonth[`${year}-${month}`] ?? 0}
+                  year={year}
+                />
+              ))
+            ) : (
+              <Text className="text-body-base text-center font-sf-rounded-medium text-grey-500">
+                No sessions yet
+              </Text>
+            )}
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 };

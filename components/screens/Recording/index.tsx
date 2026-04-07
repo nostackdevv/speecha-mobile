@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconButton } from '@/components/ui/IconButton';
@@ -8,7 +8,7 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MIN_RECORDING_DURATION_SECONDS } from '@/constants/limits';
 import { getPromptById } from '@/constants/prompts';
 import { useAnalyzeRecording } from '@/hooks/useAnalyzeRecording';
-// import { useAnalyzeMockRecording } from '@/hooks/useAnalyzeMockRecording';
+import { QueuedForSyncError } from '@/lib/pendingRecordingQueue';
 import { useRecording } from '@/hooks/useRecording';
 import { useTier } from '@/hooks/useTier';
 
@@ -40,10 +40,6 @@ export const Recording = () => {
 
   const { tier } = useTier();
   const recording = useRecording({ tier });
-  //   const analysis = useAnalyzeMockRecording({
-  //   // shouldError: 'analyzing',
-  //   // errorMessage: 'Failed to analyze speech',
-  // });
   const analysis = useAnalyzeRecording();
 
   const [showTooShortSheet, setShowTooShortSheet] = useState(false);
@@ -69,8 +65,14 @@ export const Recording = () => {
     recording.status === 'recording' || recording.status === 'paused';
 
   const submitRecording = async (uri: string) => {
-    const { analysisId } = await analysis.analyzeAsync({ uri, promptId });
-    router.replace({ pathname: '/results', params: { id: analysisId } });
+    const { analysisId, localAudioUri } = await analysis.analyzeAsync({
+      uri,
+      promptId,
+    });
+    router.replace({
+      pathname: '/results',
+      params: { audioUri: localAudioUri, id: analysisId },
+    });
   };
 
   const handleSubmitRecording = async () => {
@@ -84,8 +86,17 @@ export const Recording = () => {
       // Edge case: recording may already be stopped (auto-stop at max duration)
       const uri = isActive ? await recording.stop() : recording.uri;
       if (uri) await submitRecording(uri);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_) {}
+    } catch (error) {
+      if (error instanceof QueuedForSyncError) {
+        Alert.alert(
+          'Saved Offline',
+          'You appear to be offline. We saved your recording locally and will sync it automatically once you are back online.'
+        );
+        analysis.reset();
+        recording.reset();
+        router.replace('/');
+      }
+    }
   };
 
   const handleResume = () => {
@@ -96,6 +107,11 @@ export const Recording = () => {
   const handleTryAgain = () => {
     analysis.reset();
     recording.reset();
+    if (promptId) {
+      router.replace({ pathname: '/recording', params: { promptId } });
+      return;
+    }
+    router.replace('/recording');
   };
 
   const handleDismissPermission = () => {
