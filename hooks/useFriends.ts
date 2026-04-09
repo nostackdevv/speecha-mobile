@@ -10,6 +10,24 @@ import type {
 
 import { useAuth } from './useAuth';
 
+type FriendPushPayload =
+  | { event: 'friend_request_sent'; friendshipId: string }
+  | {
+      event: 'friend_request_responded';
+      friendshipId: string;
+      status: 'accepted' | 'rejected';
+    };
+
+const triggerFriendPushNotification = async (payload: FriendPushPayload) => {
+  const { error } = await supabase.functions.invoke('friend-push', {
+    body: payload,
+  });
+
+  if (error) {
+    throw error;
+  }
+};
+
 export const useFriendList = () => {
   const { user } = useAuth();
 
@@ -111,6 +129,14 @@ export const useSendFriendRequest = () => {
         .single();
 
       if (error) throw error;
+
+      void triggerFriendPushNotification({
+        event: 'friend_request_sent',
+        friendshipId: data.id,
+      }).catch((invokeError) => {
+        console.error('Friend request push failed:', invokeError);
+      });
+
       return data;
     },
     onSuccess: () => {
@@ -140,12 +166,22 @@ export const useRespondToFriendRequest = () => {
       id: string;
       status: 'accepted' | 'rejected';
     }) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('friendships')
         .update({ status })
-        .eq('id', id);
+        .eq('id', id)
+        .select('id')
+        .single();
 
       if (error) throw error;
+
+      void triggerFriendPushNotification({
+        event: 'friend_request_responded',
+        friendshipId: data.id,
+        status,
+      }).catch((invokeError) => {
+        console.error('Friend response push failed:', invokeError);
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friend-list', user?.id] });

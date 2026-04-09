@@ -25,6 +25,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: 'app.speecha.mobile',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      NSUserNotificationsUsageDescription:
+        'Allow $(PRODUCT_NAME) to send reminders and friend activity notifications.',
     },
   },
   web: {
@@ -35,6 +37,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-sqlite',
+    'expo-notifications',
     [
       'expo-audio',
       {

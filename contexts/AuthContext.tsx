@@ -70,6 +70,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // } catch (_err) {
     //   // User might not have signed in with Google, that's fine
     // }
+    if (user?.id) {
+      await supabase
+        .from('profiles')
+        .update({ push_token: null })
+        .eq('id', user.id);
+    }
+
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };

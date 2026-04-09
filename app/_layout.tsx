@@ -9,6 +9,7 @@ import '../global.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { useAuth } from '@/hooks/useAuth';
 import { usePendingRecordingSync } from '@/hooks/usePendingRecordingSync';
+import { usePushNotificationRegistration } from '@/hooks/usePushNotificationRegistration';
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,11 @@ const BackgroundSyncBootstrap = () => {
   return null;
 };
 
+const PushNotificationBootstrap = () => {
+  usePushNotificationRegistration();
+  return null;
+};
+
 export default function RootLayout() {
   /* eslint-disable @typescript-eslint/no-require-imports */
   const [fontsLoaded, fontError] = useFonts({
@@ -96,6 +102,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BackgroundSyncBootstrap />
+        <PushNotificationBootstrap />
         <RootNavigator />
       </AuthProvider>
     </QueryClientProvider>
