@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 
+import { identifyUser, logOutRevenueCat } from '@/lib/revenueCat';
 import { supabase } from '@/lib/supabase';
 
 // GoogleSignin.configure({
@@ -36,6 +37,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
+      if (session?.user?.id) {
+        identifyUser(session.user.id).catch(() => {});
+      }
     });
 
     const {
@@ -44,6 +48,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
+      if (session?.user?.id) {
+        identifyUser(session.user.id).catch(() => {});
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -75,6 +82,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .from('profiles')
         .update({ push_token: null })
         .eq('id', user.id);
+    }
+
+    try {
+      await logOutRevenueCat();
+    } catch {
+      // RC might not be configured or user was anonymous
     }
 
     const { error } = await supabase.auth.signOut();

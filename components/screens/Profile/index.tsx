@@ -21,6 +21,7 @@ import {
 import { useProfile } from '@/hooks/useProfile';
 import { useSelectedProfileAvatar } from '@/hooks/useSelectedProfileAvatar';
 import { useSpeechAnalysisList } from '@/hooks/useSpeechAnalyses';
+import { useTier } from '@/hooks/useTier';
 import { cn } from '@/lib/cn';
 import type { SpeechAnalysis } from '@/types/database';
 
@@ -114,6 +115,7 @@ export const Profile = () => {
   const { data: selectedAvatarKey } = useSelectedProfileAvatar();
   const { data: sessions, isLoading: isSessionsLoading } =
     useSpeechAnalysisList();
+  const { isPro } = useTier();
 
   const totalWords = useMemo(() => {
     return (sessions ?? []).reduce(
@@ -266,33 +268,59 @@ export const Profile = () => {
           </View>
         </View>
 
-        <Pressable
-          accessibilityLabel="Open Speecha Pro"
-          accessibilityRole="button"
-          className="relative overflow-hidden rounded-16 p-6"
-          onPress={() => router.push('/paywall')}
-          style={({ pressed }) => ({
-            borderCurve: 'continuous',
-            minHeight: 105,
-            opacity: pressed ? 0.85 : 1,
-          })}
-          testID="profile.get-pro"
-        >
-          <View className="absolute inset-0 bg-clarity-blue" />
-          <View className="absolute inset-0 bg-white/5" />
+        {isPro ? (
+          <View
+            className="relative overflow-hidden rounded-16 p-6"
+            style={{
+              borderCurve: 'continuous',
+              minHeight: 105,
+            }}
+            testID="profile.pro-status"
+          >
+            <View className="absolute inset-0 bg-clarity-blue" />
+            <View className="absolute inset-0 bg-white/5" />
 
-          <View className="gap-1">
-            <View className="flex-row items-center gap-2">
-              <Icon color={COLORS.white} name="crown" size={24} />
-              <Text className="font-sf-rounded-semibold text-body-xl text-white">
-                Get Speecha Pro
+            <View className="gap-1">
+              <View className="flex-row items-center gap-2">
+                <Icon color={COLORS.white} name="crown" size={24} />
+                <Text className="font-sf-rounded-semibold text-body-xl text-white">
+                  Speecha Pro
+                </Text>
+              </View>
+              <Text className="font-sf-rounded text-body-lg text-white">
+                You have access to all Pro features
               </Text>
             </View>
-            <Text className="font-sf-rounded text-body-lg text-white">
-              Unlock your full speaking potentials
-            </Text>
           </View>
-        </Pressable>
+        ) : (
+          <Pressable
+            accessibilityLabel="Open Speecha Pro"
+            accessibilityRole="button"
+            className="relative overflow-hidden rounded-16 p-6"
+            onPress={() => router.push('/paywall')}
+            style={({ pressed }) => ({
+              borderCurve: 'continuous',
+              minHeight: 105,
+              opacity: pressed ? 0.85 : 1,
+            })}
+            testID="profile.get-pro"
+          >
+            <View className="absolute inset-0 bg-clarity-blue" />
+            <View className="absolute inset-0 bg-white/5" />
+
+            <View className="gap-1">
+              <View className="flex-row items-center gap-2">
+                <Icon color={COLORS.white} name="crown" size={24} />
+                <Text className="font-sf-rounded-semibold text-body-xl text-white">
+                  Get Speecha Pro
+                </Text>
+              </View>
+              <Text className="font-sf-rounded text-body-lg text-white">
+                Unlock your full speaking potentials
+              </Text>
+            </View>
+          </Pressable>
+        )}
 
         <View className="w-full gap-3">
           <View className="flex-row gap-3">

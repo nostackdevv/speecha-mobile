@@ -1,7 +1,14 @@
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
@@ -9,7 +16,9 @@ import { COLORS } from '@/constants/colors';
 import type { IconName } from '@/constants/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useUpdateProfile } from '@/hooks/useProfile';
+import { useTier } from '@/hooks/useTier';
 import { cn } from '@/lib/cn';
+import { hasProEntitlement, restorePurchases } from '@/lib/revenueCat';
 
 type NotificationKey =
   | 'dailyReminder'
@@ -164,6 +173,7 @@ export const Settings = () => {
   const { signOut } = useAuth();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
+  const { isPro } = useTier();
 
   const [dailyReminderOverride, setDailyReminderOverride] = useState<
     boolean | null
@@ -322,6 +332,59 @@ export const Settings = () => {
               subtitle="When someone adds you"
               testID="settings.friend-request"
               title="Friend request"
+            />
+          </View>
+
+          <View
+            className="gap-8 rounded-24 bg-grey-50 p-5"
+            style={{ borderCurve: 'continuous' }}
+          >
+            {isPro ? (
+              <SettingActionRow
+                icon="crown"
+                onPress={() =>
+                  Linking.openURL(
+                    'https://apps.apple.com/account/subscriptions'
+                  )
+                }
+                testID="settings.manage-subscription"
+                title="Manage Subscription"
+                subtitle="Open App Store to manage your plan"
+              />
+            ) : (
+              <SettingActionRow
+                icon="crown"
+                onPress={() => router.push('/paywall')}
+                testID="settings.upgrade-pro"
+                title="Upgrade to Pro"
+                subtitle="Unlock unlimited recordings and more"
+              />
+            )}
+            <SettingActionRow
+              icon="clock"
+              onPress={async () => {
+                try {
+                  const customerInfo = await restorePurchases();
+                  if (hasProEntitlement(customerInfo)) {
+                    Alert.alert(
+                      'Restored!',
+                      'Your Pro subscription has been restored.'
+                    );
+                  } else {
+                    Alert.alert(
+                      'No Subscription Found',
+                      'We could not find an active subscription to restore.'
+                    );
+                  }
+                } catch {
+                  Alert.alert(
+                    'Restore Failed',
+                    'Something went wrong. Please try again.'
+                  );
+                }
+              }}
+              testID="settings.restore-purchases"
+              title="Restore Purchases"
             />
           </View>
 

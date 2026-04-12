@@ -1,12 +1,28 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
+import { type PurchasesPackage } from 'react-native-purchases';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { COLORS } from '@/constants/colors';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import {
+  fetchOfferings,
+  hasProEntitlement,
+  purchasePackage,
+  restorePurchases,
+} from '@/lib/revenueCat';
 import { cn } from '@/lib/cn';
 
 type PlanId = 'annual' | 'monthly';
@@ -18,24 +34,10 @@ const FEATURES = [
   'Cloud sync',
 ] as const;
 
-const PLAN_OPTIONS: {
-  id: PlanId;
-  name: string;
-  price: string;
-  showBestValue?: boolean;
-}[] = [
-  {
-    id: 'annual',
-    name: 'ANNUAL PLAN',
-    price: '$28.99 / year',
-    showBestValue: true,
-  },
-  {
-    id: 'monthly',
-    name: 'MONTHLY PLAN',
-    price: '$12.65 / month',
-  },
-];
+const FALLBACK_PRICES: Record<PlanId, string> = {
+  annual: '$59.99 / year',
+  monthly: '$7.99 / month',
+};
 
 const FeatureItem = ({ text }: { text: string }) => (
   <View className="flex-row items-end gap-2">
@@ -114,12 +116,150 @@ const PlanCard = ({
 export const Paywall = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { isPro } = useSubscription();
 
   const [selectedPlan, setSelectedPlan] = useState<PlanId>('annual');
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [packages, setPackages] = useState<{
+    annual: PurchasesPackage | null;
+    monthly: PurchasesPackage | null;
+  }>({ annual: null, monthly: null });
 
-  const handleUpgrade = () => {
-    router.push('/pro-welcome');
+  useEffect(() => {
+    const loadOfferings = async () => {
+      try {
+        const offerings = await fetchOfferings();
+        const current = offerings.current;
+        if (!current) return;
+
+        setPackages({
+          annual: current.annual ?? null,
+          monthly: current.monthly ?? null,
+        });
+      } catch {
+        // Use fallback prices if offerings fail to load
+      }
+    };
+    void loadOfferings();
+  }, []);
+
+  const getPrice = (planId: PlanId): string => {
+    const pkg = packages[planId];
+    if (pkg) {
+      return planId === 'annual'
+        ? `${pkg.product.priceString} / year`
+        : `${pkg.product.priceString} / month`;
+    }
+    return FALLBACK_PRICES[planId];
   };
+
+  const PLAN_OPTIONS: {
+    id: PlanId;
+    name: string;
+    showBestValue?: boolean;
+  }[] = [
+    {
+      id: 'annual',
+      name: 'ANNUAL PLAN',
+      showBestValue: true,
+    },
+    {
+      id: 'monthly',
+      name: 'MONTHLY PLAN',
+    },
+  ];
+
+  const handleUpgrade = async () => {
+    const pkg = packages[selectedPlan];
+    if (!pkg) {
+      Alert.alert(
+        'Unavailable',
+        'Subscription packages are not available right now. Please try again later.'
+      );
+      return;
+    }
+
+    setIsPurchasing(true);
+    try {
+      const customerInfo = await purchasePackage(pkg);
+      if (hasProEntitlement(customerInfo)) {
+        router.push('/pro-welcome');
+      }
+    } catch (error: unknown) {
+      const purchaseError = error as { userCancelled?: boolean };
+      if (!purchaseError.userCancelled) {
+        Alert.alert(
+          'Purchase Failed',
+          'Something went wrong with your purchase. Please try again.'
+        );
+      }
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    setIsRestoring(true);
+    try {
+      const customerInfo = await restorePurchases();
+      if (hasProEntitlement(customerInfo)) {
+        Alert.alert('Restored!', 'Your Pro subscription has been restored.', [
+          { onPress: () => router.push('/pro-welcome'), text: 'OK' },
+        ]);
+      } else {
+        Alert.alert(
+          'No Subscription Found',
+          'We could not find an active subscription to restore.'
+        );
+      }
+    } catch {
+      Alert.alert(
+        'Restore Failed',
+        'Something went wrong. Please try again later.'
+      );
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
+  if (isPro) {
+    return (
+      <View className="flex-1 bg-clarity-blue" testID="paywall.screen">
+        <View
+          className="mt-[62px] flex-1 items-center justify-center overflow-hidden rounded-40 bg-white"
+          style={{ borderCurve: 'continuous' }}
+        >
+          <View className="items-center gap-4 px-6">
+            <Icon color={COLORS.clarityBlue.DEFAULT} name="crown" size={48} />
+            <Text className="text-center font-sf-rounded-semibold text-h3 text-black">
+              You&apos;re on Speecha Pro
+            </Text>
+            <Text className="text-center font-sf-rounded text-body-lg text-grey-500">
+              You already have access to all Pro features.
+            </Text>
+            <Button
+              fullWidth
+              onPress={() =>
+                Linking.openURL('https://apps.apple.com/account/subscriptions')
+              }
+              testID="paywall.manage-btn"
+              title="Manage Subscription"
+            />
+            <Pressable
+              onPress={() => router.back()}
+              style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+              testID="paywall.back-btn"
+            >
+              <Text className="font-sf-rounded-medium text-body-lg text-grey-500">
+                Go back
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-clarity-blue" testID="paywall.screen">
@@ -164,7 +304,7 @@ export const Paywall = () => {
                   key={plan.id}
                   name={plan.name}
                   onPress={() => setSelectedPlan(plan.id)}
-                  price={plan.price}
+                  price={getPrice(plan.id)}
                   selected={selectedPlan === plan.id}
                   showBestValue={plan.showBestValue}
                   testID={`paywall.plan-${plan.id}`}
@@ -175,15 +315,34 @@ export const Paywall = () => {
         </ScrollView>
 
         <View
-          className="px-6"
+          className="gap-3 px-6"
           style={{ paddingBottom: Math.max(insets.bottom + 16, 24) }}
         >
           <Button
+            disabled={isPurchasing}
             fullWidth
-            onPress={handleUpgrade}
+            onPress={() => void handleUpgrade()}
             testID="paywall.upgrade-btn"
-            title="Upgrade to Pro"
+            title={isPurchasing ? 'Processing...' : 'Upgrade to Pro'}
           />
+
+          <Pressable
+            disabled={isRestoring}
+            onPress={() => void handleRestore()}
+            style={({ pressed }) => ({
+              alignSelf: 'center',
+              opacity: pressed || isRestoring ? 0.5 : 1,
+            })}
+            testID="paywall.restore-btn"
+          >
+            {isRestoring ? (
+              <ActivityIndicator size="small" />
+            ) : (
+              <Text className="font-sf-rounded-medium text-body-md text-grey-500">
+                Restore Purchases
+              </Text>
+            )}
+          </Pressable>
         </View>
       </View>
     </View>

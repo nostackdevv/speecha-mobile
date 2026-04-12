@@ -7,9 +7,11 @@ import 'react-native-reanimated';
 import '../global.css';
 
 import { AuthProvider } from '@/contexts/AuthContext';
+import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/hooks/useAuth';
 import { usePendingRecordingSync } from '@/hooks/usePendingRecordingSync';
 import { usePushNotificationRegistration } from '@/hooks/usePushNotificationRegistration';
+import { configureRevenueCat } from '@/lib/revenueCat';
 
 const queryClient = new QueryClient();
 
@@ -77,6 +79,13 @@ const PushNotificationBootstrap = () => {
   return null;
 };
 
+const RevenueCatBootstrap = () => {
+  useEffect(() => {
+    configureRevenueCat();
+  }, []);
+  return null;
+};
+
 export default function RootLayout() {
   /* eslint-disable @typescript-eslint/no-require-imports */
   const [fontsLoaded, fontError] = useFonts({
@@ -101,9 +110,12 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BackgroundSyncBootstrap />
-        <PushNotificationBootstrap />
-        <RootNavigator />
+        <RevenueCatBootstrap />
+        <SubscriptionProvider>
+          <BackgroundSyncBootstrap />
+          <PushNotificationBootstrap />
+          <RootNavigator />
+        </SubscriptionProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
