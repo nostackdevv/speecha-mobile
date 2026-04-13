@@ -21,6 +21,30 @@ export type Database = {
   };
   public: {
     Tables: {
+      badge_definitions: {
+        Row: {
+          caption: string;
+          created_at: string;
+          key: string;
+          sort_order: number;
+          title: string;
+        };
+        Insert: {
+          caption: string;
+          created_at?: string;
+          key: string;
+          sort_order: number;
+          title: string;
+        };
+        Update: {
+          caption?: string;
+          created_at?: string;
+          key?: string;
+          sort_order?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
       feedback: {
         Row: {
           created_at: string | null;
@@ -125,6 +149,74 @@ export type Database = {
           username?: string;
         };
         Relationships: [];
+      };
+      profile_badge_events: {
+        Row: {
+          created_at: string;
+          event_key: string;
+          id: string;
+          profile_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          event_key: string;
+          id?: string;
+          profile_id: string;
+        };
+        Update: {
+          created_at?: string;
+          event_key?: string;
+          id?: string;
+          profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'profile_badge_events_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      profile_badges: {
+        Row: {
+          badge_key: string;
+          created_at: string;
+          id: string;
+          profile_id: string;
+          unlocked_at: string;
+        };
+        Insert: {
+          badge_key: string;
+          created_at?: string;
+          id?: string;
+          profile_id: string;
+          unlocked_at?: string;
+        };
+        Update: {
+          badge_key?: string;
+          created_at?: string;
+          id?: string;
+          profile_id?: string;
+          unlocked_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'profile_badges_badge_key_fkey';
+            columns: ['badge_key'];
+            isOneToOne: false;
+            referencedRelation: 'badge_definitions';
+            referencedColumns: ['key'];
+          },
+          {
+            foreignKeyName: 'profile_badges_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       speech_analyses: {
         Row: {
@@ -254,6 +346,21 @@ export type Database = {
           sender_id: string;
           username: string;
         }[];
+      };
+      get_my_badges: {
+        Args: never;
+        Returns: {
+          badge_key: string;
+          caption: string;
+          is_unlocked: boolean;
+          sort_order: number;
+          title: string;
+          unlocked_at: string | null;
+        }[];
+      };
+      record_badge_event: {
+        Args: { p_event_key: string };
+        Returns: undefined;
       };
     };
     Enums: {

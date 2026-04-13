@@ -9,6 +9,7 @@ import type {
 } from '@/types/database';
 
 import { useAuth } from './useAuth';
+import { getMyBadgesQueryKey } from './useBadges';
 
 type FriendPushPayload =
   | { event: 'friend_request_sent'; friendshipId: string }
@@ -187,6 +188,9 @@ export const useRespondToFriendRequest = () => {
       queryClient.invalidateQueries({ queryKey: ['friend-list', user?.id] });
       queryClient.invalidateQueries({
         queryKey: ['friend-requests', user?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: getMyBadgesQueryKey(user?.id),
       });
     },
   });

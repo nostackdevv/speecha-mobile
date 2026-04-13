@@ -5,6 +5,7 @@ import { audioRecordingStorage } from '@/lib/audioRecordingStorage';
 import type { SpeechAnalysis, SpeechAnalysisInsert } from '@/types/database';
 
 import { useAuth } from './useAuth';
+import { getMyBadgesQueryKey } from './useBadges';
 
 export const useSpeechAnalysisList = () => {
   const { user } = useAuth();
@@ -72,6 +73,9 @@ export const useCreateSpeechAnalysis = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ['profile', user?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: getMyBadgesQueryKey(user?.id),
       });
     },
   });

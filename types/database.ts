@@ -41,3 +41,8 @@ export type SearchedProfile =
   Database['public']['Functions']['search_profile_by_email']['Returns'][number];
 export type FriendRequest =
   Database['public']['Functions']['get_friend_requests']['Returns'][number];
+
+export type MyBadge =
+  Database['public']['Functions']['get_my_badges']['Returns'][number];
+
+export type BadgeEventKey = 'social_share';

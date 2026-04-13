@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
 import { IconButton } from '@/components/ui/IconButton';
+import { useRecordBadgeEvent } from '@/hooks/useBadges';
 import { useSpeechAnalysisDetail } from '@/hooks/useSpeechAnalyses';
 import { audioRecordingStorage } from '@/lib/audioRecordingStorage';
 import { getSessionTitle } from '@/lib/speechMetrics';
@@ -41,6 +42,7 @@ export const Results = () => {
   const id = normalizeRouteParam(params.id);
   const fallbackAudioUri = normalizeRouteParam(params.audioUri);
   const { data: dbRow, isLoading, error } = useSpeechAnalysisDetail(id);
+  const recordBadgeEvent = useRecordBadgeEvent();
   const data = dbRow ? transformAnalysis(dbRow) : null;
 
   const handleDone = () => {
@@ -69,7 +71,12 @@ export const Results = () => {
         `Filler/min: ${data.fillerStats.fillersPerMinute.toFixed(1)}`,
       ].join('\n');
 
-      await Share.share({ message: summary });
+      const shareResult = await Share.share({ message: summary });
+
+      if (shareResult.action !== Share.dismissedAction) {
+        void recordBadgeEvent.mutate('social_share');
+      }
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
       Alert.alert('Share failed', 'Could not share your results right now.');

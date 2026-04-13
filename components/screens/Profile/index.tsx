@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { type ComponentType, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -8,7 +8,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
 
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
@@ -16,8 +15,10 @@ import { COLORS } from '@/constants/colors';
 import {
   DEFAULT_PROFILE_AVATAR_KEY,
   PROFILE_AVATAR_MAP,
-  PROFILE_BADGES,
+  PROFILE_BADGE_VISUALS_MAP,
+  type ProfileBadgeKey,
 } from '@/constants/profileVisuals';
+import { useMyBadges } from '@/hooks/useBadges';
 import { useProfile } from '@/hooks/useProfile';
 import { useSelectedProfileAvatar } from '@/hooks/useSelectedProfileAvatar';
 import { useSpeechAnalysisList } from '@/hooks/useSpeechAnalyses';
@@ -93,25 +94,33 @@ const ProfileStatCard = ({
 );
 
 const ProfileBadge = ({
-  BadgeIcon,
-  iconSize,
+  badgeKey,
+  isUnlocked,
   label,
 }: {
-  BadgeIcon: ComponentType<SvgProps>;
-  iconSize: number;
+  badgeKey: string;
+  isUnlocked: boolean;
   label: string;
-}) => (
-  <View className="flex-1 items-center gap-2">
-    <BadgeIcon height={iconSize} width={iconSize} />
-    <Text className="text-center font-sf-rounded text-body-sm text-grey-800">
-      {label}
-    </Text>
-  </View>
-);
+}) => {
+  const visual = PROFILE_BADGE_VISUALS_MAP[badgeKey as ProfileBadgeKey];
+  const BadgeIcon = visual?.Icon;
+
+  if (!BadgeIcon || !visual) return null;
+
+  return (
+    <View className="flex-1 items-center gap-2" style={{ opacity: isUnlocked ? 1 : 0.4 }}>
+      <BadgeIcon height={visual.size} width={visual.size} />
+      <Text className="text-center font-sf-rounded text-body-sm text-grey-800">
+        {label}
+      </Text>
+    </View>
+  );
+};
 
 export const Profile = () => {
   const router = useRouter();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
+  const { data: badges } = useMyBadges();
   const { data: selectedAvatarKey } = useSelectedProfileAvatar();
   const { data: sessions, isLoading: isSessionsLoading } =
     useSpeechAnalysisList();
@@ -155,18 +164,13 @@ export const Profile = () => {
   const displayName =
     profile?.full_name?.trim() || profile?.username || 'Your Name';
 
-  const previewBadges = useMemo(
-    () =>
-      PROFILE_BADGES.slice(0, 3).map((badge, index) =>
-        index === 0
-          ? {
-              ...badge,
-              label: `${profile?.current_streak ?? 0}- DAY STREAK`,
-            }
-          : badge
-      ),
-    [profile?.current_streak]
-  );
+  const previewBadges = useMemo(() => {
+    const source = badges ?? [];
+    const unlocked = source.filter((badge) => badge.is_unlocked);
+    const prioritized = unlocked.length > 0 ? unlocked : source;
+
+    return prioritized.slice(0, 3);
+  }, [badges]);
 
   const persistedAvatar =
     PROFILE_AVATAR_MAP[selectedAvatarKey ?? DEFAULT_PROFILE_AVATAR_KEY];
@@ -360,10 +364,10 @@ export const Profile = () => {
           <View className="flex-row items-start justify-between gap-3">
             {previewBadges.map((badge) => (
               <ProfileBadge
-                BadgeIcon={badge.Icon}
-                iconSize={badge.size}
-                key={badge.label}
-                label={badge.label}
+                badgeKey={badge.badge_key}
+                isUnlocked={badge.is_unlocked}
+                key={badge.badge_key}
+                label={badge.title}
               />
             ))}
           </View>

@@ -12,8 +12,6 @@ import Badge07Variant from '@/assets/images/figma/badges/badge-07-variant.svg';
 import Badge08Variant from '@/assets/images/figma/badges/badge-08-variant.svg';
 import Badge09Variant from '@/assets/images/figma/badges/badge-09-variant.svg';
 import Badge10Variant from '@/assets/images/figma/badges/badge-10-variant.svg';
-import Badge11Variant from '@/assets/images/figma/badges/badge-11-variant.svg';
-import Badge12Variant from '@/assets/images/figma/badges/badge-12-variant.svg';
 import Avatar01 from '@/assets/images/figma/profile/avatars/avatar-01.png';
 import Avatar02 from '@/assets/images/figma/profile/avatars/avatar-02.png';
 import Avatar03 from '@/assets/images/figma/profile/avatars/avatar-03.png';
@@ -44,10 +42,21 @@ export type ProfileAvatar = {
   source: ImageSourcePropType;
 };
 
-export type ProfileBadge = {
+export type ProfileBadgeKey =
+  | 'kickstarter'
+  | 'seven_day_streak'
+  | 'clean_speaker'
+  | 'prompt_explorer'
+  | 'first_friend'
+  | 'squad_goals'
+  | 'thirty_day_streak'
+  | 'sixty_day_streak'
+  | 'ninety_day_streak'
+  | 'social_proof';
+
+export type ProfileBadgeVisual = {
   Icon: ComponentType<SvgProps>;
-  key: string;
-  label: string;
+  key: ProfileBadgeKey;
   size: number;
 };
 
@@ -82,80 +91,64 @@ export type ProfileAvatarKey = (typeof PROFILE_AVATARS)[number]['key'];
 
 export const DEFAULT_PROFILE_AVATAR_KEY: ProfileAvatarKey = 'avatar-01';
 
-export const PROFILE_BADGES: ProfileBadge[] = [
+export const PROFILE_BADGE_VISUALS: ProfileBadgeVisual[] = [
   {
     Icon: Badge01Bronze,
-    key: 'badge-01',
-    label: '7-DAY STREAK',
+    key: 'kickstarter',
     size: 56,
   },
   {
     Icon: Badge02Gold,
-    key: 'badge-02',
-    label: 'FILLER FREE',
+    key: 'seven_day_streak',
     size: 58,
   },
   {
     Icon: Badge03Speaker,
-    key: 'badge-03',
-    label: 'PUBLIC SPEAKER',
+    key: 'clean_speaker',
     size: 64,
   },
   {
     Icon: Badge04Variant,
-    key: 'badge-04',
-    label: 'PUBLIC SPEAKER',
+    key: 'prompt_explorer',
     size: 64,
   },
   {
     Icon: Badge05Variant,
-    key: 'badge-05',
-    label: 'PUBLIC SPEAKER',
+    key: 'first_friend',
     size: 64,
   },
   {
     Icon: Badge06Variant,
-    key: 'badge-06',
-    label: 'PUBLIC SPEAKER',
+    key: 'squad_goals',
     size: 64,
   },
   {
     Icon: Badge07Variant,
-    key: 'badge-07',
-    label: 'PUBLIC SPEAKER',
+    key: 'thirty_day_streak',
     size: 64,
   },
   {
     Icon: Badge08Variant,
-    key: 'badge-08',
-    label: 'PUBLIC SPEAKER',
+    key: 'sixty_day_streak',
     size: 64,
   },
   {
     Icon: Badge09Variant,
-    key: 'badge-09',
-    label: 'PUBLIC SPEAKER',
+    key: 'ninety_day_streak',
     size: 64,
   },
   {
     Icon: Badge10Variant,
-    key: 'badge-10',
-    label: 'PUBLIC SPEAKER',
-    size: 64,
-  },
-  {
-    Icon: Badge11Variant,
-    key: 'badge-11',
-    label: 'PUBLIC SPEAKER',
-    size: 64,
-  },
-  {
-    Icon: Badge12Variant,
-    key: 'badge-12',
-    label: 'PUBLIC SPEAKER',
+    key: 'social_proof',
     size: 64,
   },
 ];
+
+export const PROFILE_BADGE_VISUALS_MAP: Record<ProfileBadgeKey, ProfileBadgeVisual> =
+  PROFILE_BADGE_VISUALS.reduce(
+    (acc, badge) => ({ ...acc, [badge.key]: badge }),
+    {} as Record<ProfileBadgeKey, ProfileBadgeVisual>
+  );
 
 export const PROFILE_AVATAR_MAP: Record<ProfileAvatarKey, ImageSourcePropType> =
   PROFILE_AVATARS.reduce(
