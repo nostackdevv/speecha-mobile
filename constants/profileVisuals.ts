@@ -144,11 +144,13 @@ export const PROFILE_BADGE_VISUALS: ProfileBadgeVisual[] = [
   },
 ];
 
-export const PROFILE_BADGE_VISUALS_MAP: Record<ProfileBadgeKey, ProfileBadgeVisual> =
-  PROFILE_BADGE_VISUALS.reduce(
-    (acc, badge) => ({ ...acc, [badge.key]: badge }),
-    {} as Record<ProfileBadgeKey, ProfileBadgeVisual>
-  );
+export const PROFILE_BADGE_VISUALS_MAP: Record<
+  ProfileBadgeKey,
+  ProfileBadgeVisual
+> = PROFILE_BADGE_VISUALS.reduce(
+  (acc, badge) => ({ ...acc, [badge.key]: badge }),
+  {} as Record<ProfileBadgeKey, ProfileBadgeVisual>
+);
 
 export const PROFILE_AVATAR_MAP: Record<ProfileAvatarKey, ImageSourcePropType> =
   PROFILE_AVATARS.reduce(

@@ -1,14 +1,20 @@
-import { Text, View } from 'react-native';
+import { type ImageSourcePropType, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 
 interface HomeHeaderProps {
+  avatarSource?: ImageSourcePropType;
   date: string;
   name: string;
   onAvatarPress: () => void;
 }
 
-export const HomeHeader = ({ date, name, onAvatarPress }: HomeHeaderProps) => (
+export const HomeHeader = ({
+  avatarSource,
+  date,
+  name,
+  onAvatarPress,
+}: HomeHeaderProps) => (
   <View className="flex-row items-center justify-between">
     <View>
       <Text className="font-sf-rounded-semibold text-body-xl text-black">
@@ -18,6 +24,11 @@ export const HomeHeader = ({ date, name, onAvatarPress }: HomeHeaderProps) => (
         {date}
       </Text>
     </View>
-    <Avatar onPress={onAvatarPress} size="md" testID="home.avatar" />
+    <Avatar
+      imageSource={avatarSource}
+      onPress={onAvatarPress}
+      size="md"
+      testID="home.avatar"
+    />
   </View>
 );

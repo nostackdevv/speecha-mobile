@@ -95,7 +95,9 @@ Deno.serve(async (req: Request) => {
 
   // Handle both V1 and V2 webhook formats during migration
   const isV2 = payload.api_version?.startsWith('2');
-  const appUserId = isV2 ? payload.event?.customer_id : payload.event?.app_user_id;
+  const appUserId = isV2
+    ? payload.event?.customer_id
+    : payload.event?.app_user_id;
   const eventType = payload.event?.type;
 
   if (!appUserId) {
@@ -133,7 +135,7 @@ Deno.serve(async (req: Request) => {
         headers: {
           Authorization: `Bearer ${rcApiKey}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
       }
     );
@@ -142,21 +144,21 @@ Deno.serve(async (req: Request) => {
       console.error(
         `[revenuecat-webhook] RC V2 API error: ${rcResponse.status} ${rcResponse.statusText}`
       );
-      
+
       // Fallback: If V2 endpoint fails (e.g. migration sync issues), try the event data
       // For V2 events, entitlements are in event.data.customer_info... but to keep it simple,
       // we'll assume the webhook trigger was enough to try a canonical fetch.
       // If the fetch fails, we'll return more info or exit.
-      throw new Error(`RC API V2 fetch failed with status ${rcResponse.status}`);
+      throw new Error(
+        `RC API V2 fetch failed with status ${rcResponse.status}`
+      );
     } else {
-      const responseData: RevenueCatCustomerV2Response = await rcResponse.json();
+      const responseData: RevenueCatCustomerV2Response =
+        await rcResponse.json();
       isPro = isProActive(responseData.customer);
     }
   } catch (error) {
-    console.error(
-      '[revenuecat-webhook] Error fetching from RC V2 API:',
-      error
-    );
+    console.error('[revenuecat-webhook] Error fetching from RC V2 API:', error);
     // Silent fail if we can't confirm state — don't update DB to avoid incorrect downgrades
     return jsonResponse(
       { error: 'Failed to synchronize reality from RevenueCat' },

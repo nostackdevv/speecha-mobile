@@ -108,7 +108,10 @@ const ProfileBadge = ({
   if (!BadgeIcon || !visual) return null;
 
   return (
-    <View className="flex-1 items-center gap-2" style={{ opacity: isUnlocked ? 1 : 0.4 }}>
+    <View
+      className="flex-1 items-center gap-2"
+      style={{ opacity: isUnlocked ? 1 : 0.4 }}
+    >
       <BadgeIcon height={visual.size} width={visual.size} />
       <Text className="text-center font-sf-rounded text-body-sm text-grey-800">
         {label}

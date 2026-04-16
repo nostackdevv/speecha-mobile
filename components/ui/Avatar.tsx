@@ -1,4 +1,4 @@
-import { Pressable, View } from 'react-native';
+import { Image, type ImageSourcePropType, Pressable, View } from 'react-native';
 
 import { COLORS } from '@/constants/colors';
 import { cn } from '@/lib/cn';
@@ -46,6 +46,7 @@ const ONLINE_INDICATOR_SIZES = {
 
 interface AvatarProps {
   className?: string;
+  imageSource?: ImageSourcePropType;
   onPress?: () => void;
   ringColor?: string;
   showOnlineIndicator?: boolean;
@@ -55,6 +56,7 @@ interface AvatarProps {
 
 export const Avatar = ({
   className,
+  imageSource,
   onPress,
   ringColor,
   showOnlineIndicator,
@@ -77,11 +79,19 @@ export const Avatar = ({
           className="items-center justify-center overflow-hidden rounded-full bg-grey-200"
           style={{ height: avatar, width: avatar }}
         >
-          <Icon
-            color={COLORS.grey[400]}
-            name="userProfile"
-            size={fallbackIcon}
-          />
+          {imageSource ? (
+            <Image
+              resizeMode="cover"
+              source={imageSource}
+              style={{ height: '100%', width: '100%' }}
+            />
+          ) : (
+            <Icon
+              color={COLORS.grey[400]}
+              name="userProfile"
+              size={fallbackIcon}
+            />
+          )}
         </View>
       </View>
       {showOnlineIndicator && (

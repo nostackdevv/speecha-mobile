@@ -5,7 +5,12 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/Card';
 import { IconButton } from '@/components/ui/IconButton';
 import { SectionHeader } from '@/components/ui/SectionHeader';
+import {
+  DEFAULT_PROFILE_AVATAR_KEY,
+  PROFILE_AVATAR_MAP,
+} from '@/constants/profileVisuals';
 import { useProfile } from '@/hooks/useProfile';
+import { useSelectedProfileAvatar } from '@/hooks/useSelectedProfileAvatar';
 import { useSpeechAnalysisList } from '@/hooks/useSpeechAnalyses';
 import {
   formatHomeDate,
@@ -21,6 +26,7 @@ import { StreakCard } from './StreakCard';
 export const Home = () => {
   const router = useRouter();
   const { data: profile } = useProfile();
+  const { data: selectedAvatarKey } = useSelectedProfileAvatar();
   const { data: sessions, isLoading: isSessionsLoading } =
     useSpeechAnalysisList();
 
@@ -48,6 +54,13 @@ export const Home = () => {
     >
       <View className="gap-8">
         <HomeHeader
+          avatarSource={
+            profile?.avatar_url
+              ? { uri: profile.avatar_url }
+              : PROFILE_AVATAR_MAP[
+                  selectedAvatarKey ?? DEFAULT_PROFILE_AVATAR_KEY
+                ]
+          }
           date={dateLabel}
           name={name}
           onAvatarPress={() => router.push('/profile')}

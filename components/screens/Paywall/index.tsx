@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Linking,
   Pressable,
@@ -21,7 +20,6 @@ import {
   fetchOfferings,
   hasProEntitlement,
   purchasePackage,
-  restorePurchases,
 } from '@/lib/revenueCat';
 import { cn } from '@/lib/cn';
 
@@ -73,6 +71,7 @@ const PlanCard = ({
     onPress={onPress}
     style={({ pressed }) => ({
       borderCurve: 'continuous',
+      height: 96,
       opacity: pressed ? 0.8 : 1,
     })}
     testID={testID}
@@ -89,13 +88,18 @@ const PlanCard = ({
     ) : null}
 
     <View className="flex-row items-center justify-between">
-      <View className="w-40 gap-0.5">
+      <View className="flex-1 gap-0.5">
         <Text className="font-sf-rounded text-body-xs text-grey-500">
           {name}
         </Text>
-        <Text className="font-sf-rounded-semibold text-h4 text-black">
-          {price}
-        </Text>
+        <View className="flex-row items-baseline gap-1">
+          <Text className="font-sf-rounded-semibold text-h4 text-black">
+            {price.split(' / ')[0]}
+          </Text>
+          <Text className="font-sf-rounded text-body-xs text-grey-500">
+            / {price.split(' / ')[1]}
+          </Text>
+        </View>
       </View>
 
       <View
@@ -120,7 +124,6 @@ export const Paywall = () => {
 
   const [selectedPlan, setSelectedPlan] = useState<PlanId>('annual');
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [isRestoring, setIsRestoring] = useState(false);
   const [packages, setPackages] = useState<{
     annual: PurchasesPackage | null;
     monthly: PurchasesPackage | null;
@@ -196,30 +199,6 @@ export const Paywall = () => {
       }
     } finally {
       setIsPurchasing(false);
-    }
-  };
-
-  const handleRestore = async () => {
-    setIsRestoring(true);
-    try {
-      const customerInfo = await restorePurchases();
-      if (hasProEntitlement(customerInfo)) {
-        Alert.alert('Restored!', 'Your Pro subscription has been restored.', [
-          { onPress: () => router.push('/pro-welcome'), text: 'OK' },
-        ]);
-      } else {
-        Alert.alert(
-          'No Subscription Found',
-          'We could not find an active subscription to restore.'
-        );
-      }
-    } catch {
-      Alert.alert(
-        'Restore Failed',
-        'Something went wrong. Please try again later.'
-      );
-    } finally {
-      setIsRestoring(false);
     }
   };
 
@@ -315,7 +294,7 @@ export const Paywall = () => {
         </ScrollView>
 
         <View
-          className="gap-3 px-6"
+          className="px-6"
           style={{ paddingBottom: Math.max(insets.bottom + 16, 24) }}
         >
           <Button
@@ -325,24 +304,6 @@ export const Paywall = () => {
             testID="paywall.upgrade-btn"
             title={isPurchasing ? 'Processing...' : 'Upgrade to Pro'}
           />
-
-          <Pressable
-            disabled={isRestoring}
-            onPress={() => void handleRestore()}
-            style={({ pressed }) => ({
-              alignSelf: 'center',
-              opacity: pressed || isRestoring ? 0.5 : 1,
-            })}
-            testID="paywall.restore-btn"
-          >
-            {isRestoring ? (
-              <ActivityIndicator size="small" />
-            ) : (
-              <Text className="font-sf-rounded-medium text-body-md text-grey-500">
-                Restore Purchases
-              </Text>
-            )}
-          </Pressable>
         </View>
       </View>
     </View>

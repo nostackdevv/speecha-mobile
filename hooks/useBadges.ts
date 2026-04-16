@@ -5,10 +5,8 @@ import type { BadgeEventKey, MyBadge } from '@/types/database';
 
 import { useAuth } from './useAuth';
 
-export const getMyBadgesQueryKey = (userId: string | undefined) => [
-  'my-badges',
-  userId,
-] as const;
+export const getMyBadgesQueryKey = (userId: string | undefined) =>
+  ['my-badges', userId] as const;
 
 export const useMyBadges = () => {
   const { user } = useAuth();
