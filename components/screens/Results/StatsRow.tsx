@@ -41,7 +41,7 @@ export const StatsRow = ({
           testID="results.no-fillers"
         >
           <Icon color={COLORS.success[500]} name="smiley" size={28} />
-          <Text className="text-body font-sf-rounded-semibold text-success-600">
+          <Text className="font-sf-rounded-semibold text-body-md text-success-600">
             Yay! You have no filler words
           </Text>
         </View>

@@ -60,6 +60,7 @@ const RootNavigator = () => {
       <Stack.Screen
         name="how-speecha-works"
         options={{
+          contentStyle: { backgroundColor: 'white' },
           headerShown: false,
           presentation: 'formSheet',
           sheetAllowedDetents: 'fitToContents',

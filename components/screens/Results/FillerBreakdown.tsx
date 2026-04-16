@@ -30,13 +30,13 @@ export const FillerBreakdown = ({ topFillers }: FillerBreakdownProps) => {
                 {index + 1}
               </Text>
             </View>
-            <Text className="text-body w-20 font-sf-rounded-semibold text-black">
+            <Text className="w-16 font-sf-rounded-semibold text-body-md text-black">
               {filler.text}
             </Text>
-            <View className="w-[120px]">
+            <View className="flex-1">
               <ProgressBar progress={filler.count / maxCount} />
             </View>
-            <Text className="text-body font-sf-rounded-semibold text-black">
+            <Text className="font-sf-rounded-semibold text-body-md text-black">
               x{filler.count}
             </Text>
           </View>

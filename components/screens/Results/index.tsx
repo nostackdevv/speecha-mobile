@@ -191,9 +191,7 @@ export const Results = () => {
         </View>
       </ScrollView>
 
-      <View style={{ paddingBottom: insets.bottom }}>
-        <AudioPlayer uri={audioUri} />
-      </View>
+      <AudioPlayer bottomInset={insets.bottom} uri={audioUri} />
     </View>
   );
 };
