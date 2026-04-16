@@ -15,10 +15,11 @@ const formatTime = (seconds: number): string => {
 };
 
 interface AudioPlayerProps {
+  bottomInset?: number;
   uri: string | null;
 }
 
-export const AudioPlayer = ({ uri }: AudioPlayerProps) => {
+export const AudioPlayer = ({ bottomInset = 0, uri }: AudioPlayerProps) => {
   const source = useMemo(() => (uri ? { uri } : null), [uri]);
   const player = useAudioPlayer(source, { updateInterval: 200 });
   const status = useAudioPlayerStatus(player);
@@ -54,8 +55,9 @@ export const AudioPlayer = ({ uri }: AudioPlayerProps) => {
 
   return (
     <View
-      className="gap-3 bg-white px-6 pb-2 pt-4"
+      className="gap-3 bg-white px-6 pt-4"
       style={{
+        paddingBottom: Math.max(bottomInset, 8),
         shadowColor: '#000',
         shadowOffset: { width: 0, height: -6 },
         shadowOpacity: 0.05,

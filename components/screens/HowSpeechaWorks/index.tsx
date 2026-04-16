@@ -30,7 +30,10 @@ export const HowSpeechaWorks = () => {
   const router = useRouter();
 
   return (
-    <View className="gap-8 bg-white px-6 pt-10" testID="how-it-works.screen">
+    <View
+      className="gap-8 bg-white px-6 pb-4 pt-10"
+      testID="how-it-works.screen"
+    >
       <View className="flex-row items-center justify-between">
         <Text className="font-sf-rounded-semibold text-h4 text-black">
           How Speecha works
